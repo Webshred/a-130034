@@ -3,24 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
-  MapPin, 
-  Sprout, 
   Package, 
   Wallet, 
   BarChart2, 
   Menu, 
   X,
-  Sun,
-  Moon,
-  ChevronRight,
-  Settings,
-  Users,
-  FileText
 } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const location = useLocation();
   
   // Close mobile menu when route changes
@@ -28,39 +19,13 @@ const Navbar = () => {
     setIsOpen(false);
   }, [location.pathname]);
   
-  // Handle theme toggle
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-  
   const toggleSidebar = () => setIsOpen(!isOpen);
-  
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    if (isDarkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    }
-  };
 
   const navItems = [
     { title: 'Tableau de bord', path: '/', icon: Home },
-    { title: 'Parcelles', path: '/parcelles', icon: MapPin },
-    { title: 'Cultures', path: '/cultures', icon: Sprout },
     { title: 'Inventaire', path: '/inventaire', icon: Package },
     { title: 'Finances', path: '/finances', icon: Wallet },
     { title: 'Statistiques', path: '/statistiques', icon: BarChart2 },
-    { title: 'Rapports', path: '/rapports', icon: FileText },
-    { title: 'Paramètres', path: '/parametres', icon: Settings },
   ];
 
   const isActive = (path: string) => {
@@ -90,16 +55,11 @@ const Navbar = () => {
       >
         <div className="p-4 border-b border-border flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <Sprout className="h-6 w-6 text-agri-primary" />
-            <span className="text-lg font-bold text-foreground">Agri Dom</span>
+            <svg viewBox="0 0 24 24" width="24" height="24" className="text-blue-600">
+              <path fill="currentColor" d="M19.5,6c-1.3-1.3-3-2-4.8-2c-1.8,0-3.5,0.7-4.8,2L8.5,7.3l1.4,1.4l1.4-1.4c1.7-1.7,4.3-1.7,6,0c1.7,1.7,1.7,4.3,0,6l-1.4,1.4l1.4,1.4l1.4-1.4C20.2,13,21,11.3,21,9.5C21,8.1,20.4,6.9,19.5,6z M15.5,11.7L10.3,16.9c-0.4,0.4-1,0.4-1.4,0s-0.4-1,0-1.4l5.2-5.2c0.4-0.4,1-0.4,1.4,0S15.8,11.3,15.5,11.7z M7.5,15.5c-1.7-1.7-1.7-4.3,0-6c0.8-0.8,1.8-1.2,2.8-1.2c1,0,2.1,0.4,2.8,1.2l1.4,1.4l1.4-1.4l-1.4-1.4c-1.3-1.3-3-2-4.8-2c-1.8,0-3.5,0.7-4.8,2C3.6,9.5,3,11.2,3,13c0,1.8,0.7,3.5,2,4.8l1.4,1.4l1.4-1.4L7.5,15.5z"/>
+            </svg>
+            <span className="text-lg font-bold text-foreground">RWS</span>
           </Link>
-          <button 
-            onClick={toggleTheme} 
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
         </div>
 
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
@@ -116,13 +76,6 @@ const Navbar = () => {
             >
               <item.icon className={`h-5 w-5 ${isActive(item.path) ? 'text-agri-primary' : ''}`} />
               <span>{item.title}</span>
-              
-              {isActive(item.path) && (
-                <div className="ml-auto flex items-center">
-                  <span className="h-2 w-2 rounded-full bg-agri-primary animate-pulse-slow"></span>
-                  <ChevronRight className="h-4 w-4 text-agri-primary ml-1" />
-                </div>
-              )}
             </Link>
           ))}
         </nav>
@@ -130,11 +83,11 @@ const Navbar = () => {
         <div className="p-4 border-t border-border">
           <div className="flex items-center space-x-3 px-3 py-2">
             <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium">AD</span>
+              <span className="text-sm font-medium">RW</span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">Utilisateur</p>
-              <p className="text-xs text-muted-foreground truncate">agriculteur@example.com</p>
+              <p className="text-xs text-muted-foreground truncate">pharma@rws.com</p>
             </div>
           </div>
         </div>
