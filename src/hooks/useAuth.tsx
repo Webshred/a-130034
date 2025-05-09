@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,48 +14,68 @@ export const useAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
+    // Set initial loading state
+    setIsLoading(true);
     
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
+    try {
+      const storedUser = localStorage.getItem('currentUser');
+      
+      if (storedUser) {
+        setCurrentUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      // In case of error, ensure we don't keep user data
+      localStorage.removeItem('currentUser');
+    } finally {
+      // Always set loading to false, even if there was an error
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   }, []);
 
   const login = (username: string, password: string): boolean => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find((u: User) => u.username === username && u.password === password);
-    
-    if (user) {
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      setCurrentUser(user);
-      return true;
+    try {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: User) => u.username === username && u.password === password);
+      
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        setCurrentUser(user);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error("Error during login:", error);
+      return false;
     }
-    
-    return false;
   };
 
   const signup = (username: string, password: string): boolean => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    
-    if (users.some((u: User) => u.username === username)) {
+    try {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      
+      if (users.some((u: User) => u.username === username)) {
+        return false;
+      }
+
+      const newUser = {
+        id: Date.now().toString(),
+        username,
+        password,
+        profilePic: '',
+      };
+
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.setItem('currentUser', JSON.stringify(newUser));
+      setCurrentUser(newUser);
+      
+      return true;
+    } catch (error) {
+      console.error("Error during signup:", error);
       return false;
     }
-
-    const newUser = {
-      id: Date.now().toString(),
-      username,
-      password,
-      profilePic: '',
-    };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
-    setCurrentUser(newUser);
-    
-    return true;
   };
 
   const logout = () => {
@@ -67,20 +86,24 @@ export const useAuth = () => {
 
   const updateProfilePic = (imageUrl: string) => {
     if (currentUser) {
-      const updatedUser = { ...currentUser, profilePic: imageUrl };
-      
-      // Update in state
-      setCurrentUser(updatedUser);
-      
-      // Update in localStorage for currentUser
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      
-      // Update in the users array in localStorage
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const updatedUsers = users.map((u: User) => 
-        u.id === currentUser.id ? updatedUser : u
-      );
-      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      try {
+        const updatedUser = { ...currentUser, profilePic: imageUrl };
+        
+        // Update in state
+        setCurrentUser(updatedUser);
+        
+        // Update in localStorage for currentUser
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        
+        // Update in the users array in localStorage
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const updatedUsers = users.map((u: User) => 
+          u.id === currentUser.id ? updatedUser : u
+        );
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+      } catch (error) {
+        console.error("Error updating profile picture:", error);
+      }
     }
   };
 

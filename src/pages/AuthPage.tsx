@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { User, Lock, UserPlus, LogIn } from 'lucide-react';
+import { useAuthContext } from '../contexts/AuthContext';
 
 const AuthPage: React.FC = () => {
   const [loginUsername, setLoginUsername] = useState<string>('');
@@ -14,7 +15,9 @@ const AuthPage: React.FC = () => {
   const [signupPassword, setSignupPassword] = useState<string>('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('login');
+  
   const navigate = useNavigate();
+  const { login, signup } = useAuthContext();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,11 +27,9 @@ const AuthPage: React.FC = () => {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find((u: any) => u.username === loginUsername && u.password === loginPassword);
+    const success = login(loginUsername, loginPassword);
     
-    if (user) {
-      localStorage.setItem('currentUser', JSON.stringify(user));
+    if (success) {
       toast.success('Connexion réussie');
       navigate('/');
     } else {
@@ -49,26 +50,14 @@ const AuthPage: React.FC = () => {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const success = signup(signupUsername, signupPassword);
     
-    if (users.some((u: any) => u.username === signupUsername)) {
+    if (success) {
+      toast.success('Compte créé avec succès');
+      navigate('/');
+    } else {
       toast.error('Ce nom d\'utilisateur est déjà utilisé');
-      return;
     }
-
-    const newUser = {
-      id: Date.now().toString(),
-      username: signupUsername,
-      password: signupPassword,
-      profilePic: '',
-    };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
-    
-    toast.success('Compte créé avec succès');
-    navigate('/');
   };
 
   return (
