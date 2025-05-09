@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useAuth, { User } from '../hooks/useAuth';
 
 interface AuthContextType {
@@ -27,9 +28,21 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const auth = useAuth();
+  const navigate = useNavigate();
+  
+  // Enhanced logout with navigation
+  const logoutWithRedirect = () => {
+    auth.logout();
+    navigate('/auth');
+  };
+  
+  const authContextValue = {
+    ...auth,
+    logout: logoutWithRedirect
+  };
   
   return (
-    <AuthContext.Provider value={auth}>
+    <AuthContext.Provider value={authContextValue}>
       {children}
     </AuthContext.Provider>
   );

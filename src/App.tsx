@@ -140,10 +140,10 @@ const RouterChangeHandler = () => {
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppSettingsProvider>
-        <AuthProvider>
-          <CRMProvider>
-            <BrowserRouter>
+      <BrowserRouter>
+        <AppSettingsProvider>
+          <AuthProvider>
+            <CRMProvider>
               <TooltipProvider>
                 <RouterChangeHandler />
                 <Routes>
@@ -156,10 +156,10 @@ const App = () => {
                   ))}
                 </Routes>
               </TooltipProvider>
-            </BrowserRouter>
-          </CRMProvider>
-        </AuthProvider>
-      </AppSettingsProvider>
+            </CRMProvider>
+          </AuthProvider>
+        </AppSettingsProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };
