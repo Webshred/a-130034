@@ -7,18 +7,105 @@ import InventoryPage from "./pages/InventoryPage";
 import FinancePage from "./pages/FinancePage";
 import StatsPage from "./pages/StatsPage";
 import NotFound from "./pages/NotFound";
+import HelpPage from "./pages/HelpPage";
+import EmployeesPage from "./pages/EmployeesPage";
+import MessagesPage from "./pages/MessagesPage";
+import AccountPage from "./pages/AccountPage";
+import SettingsPage from "./pages/SettingsPage";
+import AuthPage from "./pages/AuthPage";
 import { useEffect } from "react";
 import { CRMProvider } from "./contexts/CRMContext";
 import { StatisticsProvider } from "./contexts/StatisticsContext";
 import { AppSettingsProvider } from "./contexts/AppSettingsContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import { trackPageView } from "./utils/analytics";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import AuthRoute from "./components/layout/AuthRoute";
 
-// Define routes configuration with redirects
+// Define routes configuration with redirects and authentication
 const routes = [
-  { path: "/", element: <Index /> },
-  { path: "/inventaire", element: <InventoryPage /> },
-  { path: "/finances", element: <FinancePage /> },
-  { path: "/statistiques", element: <StatisticsProvider><StatsPage /></StatisticsProvider> },
+  { 
+    path: "/", 
+    element: (
+      <ProtectedRoute>
+        <Index />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/inventaire", 
+    element: (
+      <ProtectedRoute>
+        <InventoryPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/finances", 
+    element: (
+      <ProtectedRoute>
+        <FinancePage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/statistiques", 
+    element: (
+      <ProtectedRoute>
+        <StatisticsProvider>
+          <StatsPage />
+        </StatisticsProvider>
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/employes", 
+    element: (
+      <ProtectedRoute>
+        <EmployeesPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/messages", 
+    element: (
+      <ProtectedRoute>
+        <MessagesPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/aide", 
+    element: (
+      <ProtectedRoute>
+        <HelpPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/parametres", 
+    element: (
+      <ProtectedRoute>
+        <SettingsPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/compte", 
+    element: (
+      <ProtectedRoute>
+        <AccountPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/auth", 
+    element: (
+      <AuthRoute>
+        <AuthPage />
+      </AuthRoute>
+    ) 
+  },
   { path: "*", element: <NotFound /> }
 ];
 
@@ -54,22 +141,24 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AppSettingsProvider>
-        <CRMProvider>
-          <BrowserRouter>
-            <TooltipProvider>
-              <RouterChangeHandler />
-              <Routes>
-                {routes.map((route) => (
-                  <Route 
-                    key={route.path} 
-                    path={route.path} 
-                    element={route.element} 
-                  />
-                ))}
-              </Routes>
-            </TooltipProvider>
-          </BrowserRouter>
-        </CRMProvider>
+        <AuthProvider>
+          <CRMProvider>
+            <BrowserRouter>
+              <TooltipProvider>
+                <RouterChangeHandler />
+                <Routes>
+                  {routes.map((route) => (
+                    <Route 
+                      key={route.path} 
+                      path={route.path} 
+                      element={route.element} 
+                    />
+                  ))}
+                </Routes>
+              </TooltipProvider>
+            </BrowserRouter>
+          </CRMProvider>
+        </AuthProvider>
       </AppSettingsProvider>
     </QueryClientProvider>
   );

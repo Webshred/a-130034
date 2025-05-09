@@ -8,11 +8,19 @@ import {
   BarChart2, 
   Menu, 
   X,
+  MessageSquare,
+  Users,
+  Settings,
+  HelpCircle,
+  User
 } from 'lucide-react';
+import { useAuthContext } from '../contexts/AuthContext';
+import ProfileImageUpload from './ProfileImageUpload';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { currentUser } = useAuthContext();
   
   // Close mobile menu when route changes
   useEffect(() => {
@@ -26,6 +34,11 @@ const Navbar = () => {
     { title: 'Inventaire', path: '/inventaire', icon: Package },
     { title: 'Finances', path: '/finances', icon: Wallet },
     { title: 'Statistiques', path: '/statistiques', icon: BarChart2 },
+    { title: 'Employés', path: '/employes', icon: Users },
+    { title: 'Messages', path: '/messages', icon: MessageSquare },
+    { title: 'Aide', path: '/aide', icon: HelpCircle },
+    { title: 'Paramètres', path: '/parametres', icon: Settings },
+    { title: 'Mon Compte', path: '/compte', icon: User },
   ];
 
   const isActive = (path: string) => {
@@ -82,11 +95,9 @@ const Navbar = () => {
 
         <div className="p-4 border-t border-border">
           <div className="flex items-center space-x-3 px-3 py-2">
-            <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium">RW</span>
-            </div>
+            <ProfileImageUpload />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Utilisateur</p>
+              <p className="text-sm font-medium truncate">{currentUser?.username || 'Utilisateur'}</p>
               <p className="text-xs text-muted-foreground truncate">pharma@rws.com</p>
             </div>
           </div>

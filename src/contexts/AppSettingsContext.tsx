@@ -1,9 +1,12 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AppSettings {
   darkMode: boolean;
   locale: string;
-  // Add other settings here
+  notifications: boolean;
+  analytics: boolean;
+  compactView: boolean;
 }
 
 interface AppSettingsContextType {
@@ -15,7 +18,9 @@ interface AppSettingsContextType {
 const defaultSettings: AppSettings = {
   darkMode: false,
   locale: 'fr-FR',
-  // Default values for other settings
+  notifications: true,
+  analytics: true,
+  compactView: false,
 };
 
 const AppSettingsContext = createContext<AppSettingsContextType>({
@@ -31,13 +36,37 @@ interface AppSettingsProviderProps {
 }
 
 export const AppSettingsProvider: React.FC<AppSettingsProviderProps> = ({ children }) => {
-  const [settings, setSettings] = useState<AppSettings>(defaultSettings);
+  // Try to load settings from localStorage
+  const loadSettings = (): AppSettings => {
+    try {
+      const storedSettings = localStorage.getItem('appSettings');
+      if (storedSettings) {
+        return JSON.parse(storedSettings);
+      }
+    } catch (error) {
+      console.error('Error loading settings from localStorage', error);
+    }
+    return defaultSettings;
+  };
+
+  const [settings, setSettings] = useState<AppSettings>(loadSettings());
 
   const updateSetting = (key: string, value: any) => {
-    setSettings(prevSettings => ({
-      ...prevSettings,
-      [key]: value,
-    }));
+    setSettings(prevSettings => {
+      const updatedSettings = {
+        ...prevSettings,
+        [key]: value,
+      };
+      
+      // Save to localStorage
+      try {
+        localStorage.setItem('appSettings', JSON.stringify(updatedSettings));
+      } catch (error) {
+        console.error('Error saving settings to localStorage', error);
+      }
+      
+      return updatedSettings;
+    });
   };
 
   // Fix the updateNestedSetting function with proper typing
@@ -56,6 +85,13 @@ export const AppSettingsProvider: React.FC<AppSettingsProviderProps> = ({ childr
           ...sectionData,
           [key]: value
         };
+      }
+      
+      // Save to localStorage
+      try {
+        localStorage.setItem('appSettings', JSON.stringify(updatedSettings));
+      } catch (error) {
+        console.error('Error saving settings to localStorage', error);
       }
       
       return updatedSettings;
