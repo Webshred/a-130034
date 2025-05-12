@@ -76,12 +76,10 @@ export const usePreviewActions = ({
     setIsActionInProgress(true);
     
     try {
-      // Fix: Pass options correctly as a separate third parameter
-      await exportModuleData(moduleName, 'pdf', {
-        title: title || `Rapport - ${moduleName}`,
-        columns: columns, 
-        data: data
-      });
+      // We need to pass the data as the third parameter, since exportModuleData expects customData?: any[]
+      // The options should be passed within the data items or as a separate parameter
+      await exportModuleData(moduleName, 'pdf', data);
+      
       toast.success("PDF généré avec succès", {
         description: "Le document a été téléchargé."
       });
