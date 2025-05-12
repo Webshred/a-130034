@@ -60,7 +60,8 @@ export const usePreviewActions = ({
       return;
     }
     
-    const html = generatePreviewHTML(data, moduleName, title, columns, settings.locale);
+    // Fix: Remove the columns parameter if it's causing issues
+    const html = generatePreviewHTML(data, moduleName, title, settings.locale);
     setPreviewHTML(html);
     setPreviewOpen(true);
   };
@@ -76,9 +77,10 @@ export const usePreviewActions = ({
     setIsActionInProgress(true);
     
     try {
-      await exportModuleData(moduleName, 'pdf', data, {
+      await exportModuleData(moduleName, 'pdf', {
         title: title || `Rapport - ${moduleName}`,
-        columns: columns
+        columns: columns,
+        data: data
       });
       toast.success("PDF généré avec succès", {
         description: "Le document a été téléchargé."
