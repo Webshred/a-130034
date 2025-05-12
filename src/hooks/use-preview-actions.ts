@@ -60,8 +60,8 @@ export const usePreviewActions = ({
       return;
     }
     
-    // Fix: Remove the columns parameter if it's causing issues
-    const html = generatePreviewHTML(data, moduleName, title, settings.locale);
+    // Pass columns as part of the options object
+    const html = generatePreviewHTML(data, moduleName, title || '', settings.locale);
     setPreviewHTML(html);
     setPreviewOpen(true);
   };

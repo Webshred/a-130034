@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { 
-  BarChart3, 
   TrendingUp,
   Wallet,
 } from 'lucide-react';
@@ -107,18 +106,6 @@ const Dashboard = () => {
               showEditIcon={true}
             />
           </p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <button className="px-4 py-2 text-sm bg-agri-primary text-white rounded-lg hover:bg-agri-primary-dark transition-colors">
-            Dashboard
-          </button>
-          <button 
-            className="px-4 py-2 text-sm bg-agri-primary text-white rounded-lg hover:bg-agri-primary-dark transition-colors"
-            onClick={handleAddTransaction}
-          >
-            <Wallet className="h-4 w-4 inline mr-2" />
-            Ajouter une transaction
-          </button>
         </div>
       </header>
 

@@ -5,7 +5,7 @@ import PageHeader from '../components/layout/PageHeader';
 import usePageMetadata from '../hooks/use-page-metadata';
 import TabContainer, { TabItem } from '../components/layout/TabContainer';
 import { Button } from "@/components/ui/button";
-import { Download, Upload, PieChart, BarChart, CreditCard, DollarSign, Filter, CalendarRange, Plus, FileText } from 'lucide-react';
+import { PieChart, BarChart, CreditCard, DollarSign, Filter, CalendarRange, Plus, FileText } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -54,34 +54,6 @@ const FinancePage = () => {
   const [showAddExpenseForm, setShowAddExpenseForm] = useState(false);
   const [reportGenerating, setReportGenerating] = useState(false);
 
-  const handleExportData = () => {
-    toast.success("Export des données financières", {
-      description: "Vos données ont été exportées au format Excel"
-    });
-  };
-
-  const handleImportData = () => {
-    setImportDialogOpen(true);
-  };
-
-  const handleImportConfirm = (importType: string) => {
-    setImportDialogOpen(false);
-    toast.success("Import de données réussi", {
-      description: `Les données ${importType} ont été importées avec succès`
-    });
-  };
-
-  const handleGenerateReport = () => {
-    setReportGenerating(true);
-    
-    setTimeout(() => {
-      setReportGenerating(false);
-      toast.success("Génération de rapport", {
-        description: `Rapport financier ${timeFrame} généré et prêt à télécharger`
-      });
-    }, 1500);
-  };
-  
   const handleAddIncome = () => {
     setShowAddIncomeForm(true);
     
@@ -125,106 +97,6 @@ const FinancePage = () => {
                                                         value === 'forecast' ? 'Prévisions' :
                                                         value === 'budget' ? 'Budget' : 'Rapports'}`
     });
-  };
-
-  const renderHeaderActions = () => {
-    return (
-      <div className="flex flex-wrap space-x-2">
-        <Button variant="outline" onClick={handleExportData}>
-          <Download className="mr-2 h-4 w-4" />
-          Exporter
-        </Button>
-        
-        <Button variant="outline" onClick={handleImportData}>
-          <Upload className="mr-2 h-4 w-4" />
-          Importer
-        </Button>
-        
-        <Button 
-          onClick={() => {
-            if (activeTab === 'overview') {
-              handleGenerateReport();
-            } else if (activeTab === 'income') {
-              handleAddIncome();
-            } else if (activeTab === 'expenses') {
-              handleAddExpense();
-            } else if (activeTab === 'forecast') {
-              toast.info("Simulation lancée", {
-                description: "La simulation financière est en cours d'exécution"
-              });
-            } else if (activeTab === 'budget') {
-              toast.info("Budget enregistré", {
-                description: "Les modifications du budget ont été sauvegardées"
-              });
-            } else {
-              handleGenerateReport();
-            }
-          }}
-        >
-          {activeTab === 'overview' ? (
-            <>
-              <FileText className="mr-2 h-4 w-4" />
-              Générer un rapport
-            </>
-          ) : activeTab === 'income' ? (
-            <>
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter un revenu
-            </>
-          ) : activeTab === 'expenses' ? (
-            <>
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter une dépense
-            </>
-          ) : activeTab === 'forecast' ? (
-            <>
-              <BarChart className="mr-2 h-4 w-4" />
-              Lancer une simulation
-            </>
-          ) : activeTab === 'budget' ? (
-            <>
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter une catégorie
-            </>
-          ) : (
-            <>
-              <FileText className="mr-2 h-4 w-4" />
-              Nouveau rapport
-            </>
-          )}
-        </Button>
-        
-        <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Importer des données financières</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <p className="text-muted-foreground">Choisissez le type de données à importer:</p>
-              <div className="grid grid-cols-1 gap-2">
-                <Button variant="outline" className="justify-start" onClick={() => handleImportConfirm('bancaires')}>
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Données bancaires (CSV)
-                </Button>
-                <Button variant="outline" className="justify-start" onClick={() => handleImportConfirm('comptables')}>
-                  <FileText className="h-4 w-4 mr-2" />
-                  Données comptables (Excel)
-                </Button>
-                <Button variant="outline" className="justify-start" onClick={() => handleImportConfirm('factures')}>
-                  <DollarSign className="h-4 w-4 mr-2" />
-                  Factures scannées (PDF)
-                </Button>
-              </div>
-              <div className="flex justify-end">
-                <Button variant="ghost" onClick={() => setImportDialogOpen(false)}>
-                  Annuler
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
   };
 
   const tabs: TabItem[] = [
@@ -682,7 +554,7 @@ const FinancePage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start" onClick={handleGenerateReport}>
+                <Button variant="outline" className="w-full justify-start" onClick={() => handleGenerateReport}>
                   <BarChart className="h-4 w-4 mr-2" />
                   Rapport de rentabilité
                 </Button>
@@ -745,10 +617,6 @@ const FinancePage = () => {
         onTitleChange={handleTitleChange}
         onDescriptionChange={handleDescriptionChange}
       />
-      
-      <div className="mb-6">
-        {renderHeaderActions()}
-      </div>
       
       <TabContainer 
         tabs={tabs} 
