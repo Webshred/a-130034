@@ -60,7 +60,7 @@ export const usePreviewActions = ({
       return;
     }
     
-    const html = generatePreviewHTML(data, moduleName, title || '', columns, settings.locale);
+    const html = generatePreviewHTML(data, moduleName, title || '', columns || [], settings.locale);
     setPreviewHTML(html);
     setPreviewOpen(true);
   };
@@ -76,7 +76,7 @@ export const usePreviewActions = ({
     setIsActionInProgress(true);
     
     try {
-      // Fix: Adjust the parameters to match the expected signature (moduleName, format, options)
+      // Pass the options correctly as an object
       await exportModuleData(moduleName, 'pdf', {
         title: title || `Rapport - ${moduleName}`,
         columns: columns,

@@ -23,7 +23,7 @@ const AuthRoute: React.FC<AuthRouteProps> = ({ children }) => {
   }
   
   if (currentUser) {
-    // Redirect to home page if user is already logged in
+    // Redirect to dashboard if user is already logged in
     return <Navigate to="/" state={{ from: location }} replace />;
   }
   
