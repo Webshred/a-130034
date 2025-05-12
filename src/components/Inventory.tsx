@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { DateRange } from 'react-day-picker';
 import { 
@@ -842,4 +843,80 @@ const Inventory: React.FC<InventoryProps> = ({ dateRange, searchTerm: externalSe
                     <Input
                       id="minQuantity"
                       type="number"
-                      value
+                      value={newItem.minQuantity}
+                      onChange={(e) => setNewItem({ ...newItem, minQuantity: Number(e.target.value) })}
+                      min={0}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="price">Prix unitaire (€)</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      value={newItem.price}
+                      onChange={(e) => setNewItem({ ...newItem, price: Number(e.target.value) })}
+                      min={0}
+                      step="0.01"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="location">Emplacement</Label>
+                    <Input
+                      id="location"
+                      value={newItem.location}
+                      onChange={(e) => setNewItem({ ...newItem, location: e.target.value })}
+                      className="mt-1"
+                      placeholder="Ex: Hangar principal"
+                    />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Label htmlFor="notes">Notes</Label>
+                  <Textarea
+                    id="notes"
+                    value={newItem.notes}
+                    onChange={(e) => setNewItem({ ...newItem, notes: e.target.value })}
+                    className="mt-1"
+                    placeholder="Informations complémentaires..."
+                  />
+                </div>
+                <div className="flex justify-end mt-6 gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowAddForm(false)}
+                  >
+                    Annuler
+                  </Button>
+                  <Button onClick={handleAddItem}>
+                    <Check className="mr-2 h-4 w-4" />
+                    Ajouter l'article
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      ) : null}
+
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={handleDeleteItem}
+        title="Supprimer l'article"
+        description="Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible."
+      />
+      
+      <ConfirmDialog
+        isOpen={transactionDeleteConfirmOpen}
+        onClose={() => setTransactionDeleteConfirmOpen(false)}
+        onConfirm={handleDeleteTransaction}
+        title="Supprimer la transaction"
+        description="Êtes-vous sûr de vouloir supprimer cette transaction ? Le stock sera ajusté en conséquence."
+      />
+    </div>
+  );
+};
+
+export default Inventory;
