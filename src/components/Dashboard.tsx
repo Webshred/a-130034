@@ -5,7 +5,6 @@ import {
   Wallet,
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { EditableField } from './ui/editable-field';
 import { toast } from 'sonner';
 
 // Sample data for charts
@@ -20,7 +19,7 @@ const revenueData = [
 ];
 
 const Dashboard = () => {
-  // State for editable content
+  // State for content
   const [title, setTitle] = useState('Bonjour, Utilisateur RWS');
   const [description, setDescription] = useState('Voici un aperçu des statistiques pharmaceutiques');
   const [currentMonth, setCurrentMonth] = useState('Août 2025');
@@ -33,78 +32,15 @@ const Dashboard = () => {
   const [averageYield, setAverageYield] = useState(75);
   const [yieldGrowth, setYieldGrowth] = useState(5.2);
   
-  // Handle changes
-  const handleTitleChange = (value: string | number) => {
-    setTitle(String(value));
-    toast.success('Titre mis à jour');
-  };
-  
-  const handleDescriptionChange = (value: string | number) => {
-    setDescription(String(value));
-    toast.success('Description mise à jour');
-  };
-  
-  const handleMonthChange = (value: string | number) => {
-    setCurrentMonth(String(value));
-    toast.success('Mois mis à jour');
-  };
-  
-  // Stat card updates
-  const handleRevenueChange = (value: string | number) => {
-    setMonthlyRevenue(Number(value));
-    toast.success('Revenu mensuel mis à jour');
-  };
-  
-  const handleRevenueGrowthChange = (value: string | number) => {
-    setRevenueGrowth(Number(value));
-    toast.success('Croissance du revenu mise à jour');
-  };
-  
-  const handleAreaChange = (value: string | number) => {
-    setCultivatedArea(Number(value));
-    toast.success('Production mise à jour');
-  };
-  
-  const handleParcelsCountChange = (value: string | number) => {
-    setParcelsCount(Number(value));
-    toast.success('Nombre de produits mis à jour');
-  };
-  
-  const handleYieldChange = (value: string | number) => {
-    setAverageYield(Number(value));
-    toast.success('Rendement moyen mis à jour');
-  };
-  
-  const handleYieldGrowthChange = (value: string | number) => {
-    setYieldGrowth(Number(value));
-    toast.success('Croissance du rendement mise à jour');
-  };
-  
-  // Add transaction handler (placeholder for future implementation)
-  const handleAddTransaction = () => {
-    toast.info('Redirection vers la page de finances');
-    // In a real app, this would navigate to the finance page
-  };
-  
   return (
     <div className="p-6 space-y-6 animate-enter">
       <header className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
         <div>
           <h1 className="text-2xl font-bold mb-1">
-            <EditableField
-              value={title}
-              onSave={handleTitleChange}
-              className="inline-block"
-              showEditIcon={true}
-            />
+            {title}
           </h1>
           <p className="text-muted-foreground">
-            <EditableField
-              value={description}
-              onSave={handleDescriptionChange}
-              className="inline-block"
-              showEditIcon={true}
-            />
+            {description}
           </p>
         </div>
       </header>
@@ -115,21 +51,11 @@ const Dashboard = () => {
           <p className="stat-label">Revenu mensuel</p>
           <div className="flex items-baseline justify-between mt-2">
             <p className="stat-value">
-              <EditableField
-                value={monthlyRevenue}
-                type="number"
-                onSave={handleRevenueChange}
-                className="inline-block font-bold"
-              /> €
+              {monthlyRevenue} €
             </p>
             <span className="text-agri-success text-sm font-medium flex items-center">
               <TrendingUp className="h-4 w-4 mr-1" /> +
-              <EditableField
-                value={revenueGrowth}
-                type="number"
-                onSave={handleRevenueGrowthChange}
-                className="inline-block"
-              />%
+              {revenueGrowth}%
             </span>
           </div>
         </div>
@@ -138,20 +64,10 @@ const Dashboard = () => {
           <p className="stat-label">Production</p>
           <div className="flex items-baseline justify-between mt-2">
             <p className="stat-value">
-              <EditableField
-                value={cultivatedArea}
-                type="number"
-                onSave={handleAreaChange}
-                className="inline-block font-bold"
-              /> K
+              {cultivatedArea} K
             </p>
             <span className="text-agri-primary text-sm font-medium">
-              <EditableField
-                value={parcelsCount}
-                type="number"
-                onSave={handleParcelsCountChange}
-                className="inline-block"
-              /> produits
+              {parcelsCount} produits
             </span>
           </div>
         </div>
@@ -160,21 +76,11 @@ const Dashboard = () => {
           <p className="stat-label">Rendement moyen</p>
           <div className="flex items-baseline justify-between mt-2">
             <p className="stat-value">
-              <EditableField
-                value={averageYield}
-                type="number"
-                onSave={handleYieldChange}
-                className="inline-block font-bold"
-              /> %
+              {averageYield} %
             </p>
             <span className="text-agri-success text-sm font-medium flex items-center">
               <TrendingUp className="h-4 w-4 mr-1" /> +
-              <EditableField
-                value={yieldGrowth}
-                type="number"
-                onSave={handleYieldGrowthChange}
-                className="inline-block"
-              />%
+              {yieldGrowth}%
             </span>
           </div>
         </div>

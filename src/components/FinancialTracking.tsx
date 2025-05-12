@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { EditableField } from './ui/editable-field';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "./ui/dialog";
@@ -10,7 +8,7 @@ import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, PlusCircle, Download, Printer, Trash2, FileText } from 'lucide-react';
+import { CalendarIcon, PlusCircle, FileText } from 'lucide-react';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PageHeader from './layout/PageHeader';
@@ -38,7 +36,7 @@ const transactionSchema = z.object({
 });
 
 const FinancialTracking = () => {
-  // State for editable content
+  // State for content
   const [title, setTitle] = useState('Suivi Financier');
   const [description, setDescription] = useState('Gérez vos revenus et dépenses pour optimiser la rentabilité de votre exploitation');
   
@@ -130,110 +128,12 @@ const FinancialTracking = () => {
     toast.success('Transaction supprimée');
   };
   
-  // Handle edit transaction
+  // Handle update transaction
   const handleUpdateTransaction = (id: number, field: string, value: any) => {
     setTransactions(transactions.map(t => 
       t.id === id ? { ...t, [field]: field === 'amount' ? parseFloat(value) : value } : t
     ));
     toast.success('Transaction mise à jour');
-  };
-  
-  // Export to CSV
-  const exportToCSV = () => {
-    // Create CSV content
-    const headers = ['Date', 'Description', 'Montant', 'Catégorie', 'Type'];
-    const rows = transactions.map(t => [
-      t.date, 
-      t.description, 
-      t.amount.toString(), 
-      t.category, 
-      t.type === 'income' ? 'Revenu' : 'Dépense'
-    ]);
-    
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-    
-    // Create download link
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `transactions_${new Date().toISOString().slice(0,10)}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast.success('Données exportées en CSV');
-  };
-  
-  // Print transactions
-  const printTransactions = () => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      toast.error('Impossible d\'ouvrir la fenêtre d\'impression');
-      return;
-    }
-    
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Transactions Financières</title>
-          <style>
-            body { font-family: Arial, sans-serif; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
-            th { background-color: #f2f2f2; }
-            .income { color: green; }
-            .expense { color: red; }
-            h2 { margin-bottom: 5px; }
-            .summary { margin-bottom: 20px; }
-          </style>
-        </head>
-        <body>
-          <h1>Transactions Financières</h1>
-          <div class="summary">
-            <p>Revenus totaux: <b>${totalIncome.toFixed(2)} €</b></p>
-            <p>Dépenses totales: <b>${totalExpenses.toFixed(2)} €</b></p>
-            <p>Solde: <b class="${balance >= 0 ? 'income' : 'expense'}">${balance.toFixed(2)} €</b></p>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Montant</th>
-                <th>Catégorie</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${transactions.map(t => `
-                <tr>
-                  <td>${new Date(t.date).toLocaleDateString()}</td>
-                  <td>${t.description}</td>
-                  <td class="${t.type === 'income' ? 'income' : 'expense'}">${t.amount.toFixed(2)} €</td>
-                  <td>${t.category}</td>
-                  <td>${t.type === 'income' ? 'Revenu' : 'Dépense'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <script>
-            window.onload = function() { window.print(); }
-          </script>
-        </body>
-      </html>
-    `;
-    
-    printWindow.document.open();
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-    
-    toast.success('Impression préparée');
   };
   
   return (
@@ -317,22 +217,6 @@ const FinancialTracking = () => {
             <CardTitle>Transactions Récentes</CardTitle>
             <div className="flex gap-2">
               <Button 
-                variant="outline" 
-                size="sm"
-                onClick={exportToCSV}
-              >
-                <Download className="h-4 w-4 mr-1" />
-                Exporter
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={printTransactions}
-              >
-                <Printer className="h-4 w-4 mr-1" />
-                Imprimer
-              </Button>
-              <Button 
                 onClick={() => setShowAddDialog(true)}
                 size="sm"
               >
@@ -393,47 +277,25 @@ const FinancialTracking = () => {
                     
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                        <EditableField
-                          value={new Date(transaction.date).toLocaleDateString()}
-                          type="date"
-                          onSave={(value) => handleUpdateTransaction(
-                            transaction.id, 
-                            'date', 
-                            typeof value === 'string' ? value : new Date(value).toISOString().split('T')[0]
-                          )}
-                          className="text-sm font-medium"
-                        />
+                        <span className="text-sm font-medium">
+                          {new Date(transaction.date).toLocaleDateString()}
+                        </span>
                         <span className="hidden sm:inline text-muted-foreground">•</span>
-                        <EditableField
-                          value={transaction.category}
-                          onSave={(value) => handleUpdateTransaction(transaction.id, 'category', value)}
-                          className="text-xs bg-muted px-2 py-1 rounded"
-                        />
+                        <span className="text-xs bg-muted px-2 py-1 rounded">
+                          {transaction.category}
+                        </span>
                       </div>
-                      <EditableField
-                        value={transaction.description}
-                        onSave={(value) => handleUpdateTransaction(transaction.id, 'description', value)}
-                        className="text-muted-foreground text-sm mt-1"
-                      />
+                      <span className="text-muted-foreground text-sm mt-1">
+                        {transaction.description}
+                      </span>
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <EditableField
-                        value={transaction.amount}
-                        type="number"
-                        onSave={(value) => handleUpdateTransaction(transaction.id, 'amount', value)}
-                        className={`font-semibold ${
-                          transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                        }`}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-600 hover:text-red-800 hover:bg-red-50 p-1"
-                        onClick={() => handleDeleteTransaction(transaction.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <span className={`font-semibold ${
+                        transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {transaction.amount.toFixed(2)} €
+                      </span>
                     </div>
                   </div>
                 ))
