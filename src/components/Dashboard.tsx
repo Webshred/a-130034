@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import { 
   BarChart3, 
-  TrendingUp, 
-  Calendar,
+  TrendingUp,
   Wallet,
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -90,7 +89,7 @@ const Dashboard = () => {
   
   return (
     <div className="p-6 space-y-6 animate-enter">
-      <header className="flex justify-between items-center mb-6">
+      <header className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow-sm">
         <div>
           <h1 className="text-2xl font-bold mb-1">
             <EditableField
@@ -110,13 +109,8 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="flex items-center space-x-4">
-          <button className="px-4 py-2 text-sm text-agri-primary font-medium bg-agri-primary/10 rounded-lg hover:bg-agri-primary/20 transition-colors">
-            <Calendar className="h-4 w-4 inline mr-2" />
-            <EditableField
-              value={currentMonth}
-              onSave={handleMonthChange}
-              className="inline-block"
-            />
+          <button className="px-4 py-2 text-sm bg-agri-primary text-white rounded-lg hover:bg-agri-primary-dark transition-colors">
+            Dashboard
           </button>
           <button 
             className="px-4 py-2 text-sm bg-agri-primary text-white rounded-lg hover:bg-agri-primary-dark transition-colors"

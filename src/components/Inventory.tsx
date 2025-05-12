@@ -9,11 +9,6 @@ import {
   X,
   Check,
   Save,
-  FileUp,
-  FileDown,
-  BarChart2,
-  Search,
-  Filter,
   Trash2
 } from 'lucide-react';
 import { EditableTable, Column } from './ui/editable-table';
@@ -25,14 +20,8 @@ import { toast } from 'sonner';
 import { EditableField } from './ui/editable-field';
 import ConfirmDialog from './inventory/ConfirmDialog';
 import { 
-  exportInventoryToCSV, 
-  importInventoryFromCSV,
-  exportInventoryToPDF,
-  downloadInventoryTemplate,
   InventoryItem 
 } from './inventory/ImportExportFunctions';
-import InventoryFilters from './inventory/InventoryFilters';
-import InventoryStats from './inventory/InventoryStats';
 import InventoryAlerts from './inventory/InventoryAlerts';
 import { 
   BarChart, 
@@ -233,77 +222,6 @@ const Inventory: React.FC<InventoryProps> = ({ dateRange, searchTerm: externalSe
     });
   
   const categories = ['all', ...new Set(inventoryData.map(item => item.category))];
-  
-  const handleExportData = () => {
-    if (view === 'list') {
-      exportInventoryToCSV(inventoryData);
-    } else if (view === 'stats') {
-      exportInventoryToPDF(inventoryData);
-    }
-  };
-  
-  const handleImportClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-  
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    importInventoryFromCSV(file, (importedData) => {
-      const existingIds = new Set(inventoryData.map(item => item.id));
-      const newItems = importedData.filter(item => !existingIds.has(item.id));
-      const updatedItems = importedData.filter(item => existingIds.has(item.id));
-      
-      const updatedInventory = inventoryData.map(item => {
-        const updatedItem = updatedItems.find(update => update.id === item.id);
-        return updatedItem || item;
-      });
-      
-      setInventoryData([...updatedInventory, ...newItems]);
-      
-      updateCategoryStats([...updatedInventory, ...newItems]);
-    }, {
-      onProgress: (progress) => {
-        if (progress === 100) {
-          toast.success("Import terminé avec succès");
-        }
-      }
-    });
-    
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-  
-  const updateCategoryStats = (items: typeof inventoryData) => {
-    const categories: Record<string, number> = {};
-    const colors: Record<string, string> = {};
-    
-    categoryStats.forEach(stat => {
-      colors[stat.name] = stat.fill;
-    });
-    
-    items.forEach(item => {
-      if (!categories[item.category]) {
-        categories[item.category] = 0;
-        if (!colors[item.category]) {
-          colors[item.category] = getRandomColor();
-        }
-      }
-      categories[item.category] += item.quantity;
-    });
-    
-    const newStats = Object.entries(categories).map(([name, value]) => ({
-      name,
-      value,
-      fill: colors[name]
-    }));
-    
-    setCategoryStats(newStats);
-  };
   
   const confirmDeleteItem = (id: number) => {
     setItemToDelete(id);
@@ -526,58 +444,17 @@ const Inventory: React.FC<InventoryProps> = ({ dateRange, searchTerm: externalSe
 
   return (
     <div className="animate-enter">
-      <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+      <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4 bg-gray-100 p-4 rounded-lg shadow-sm">
         <div>
           <h1 className="text-2xl font-bold mb-1">Gestion des Stocks</h1>
           <p className="text-muted-foreground">Gérez votre inventaire et suivez les niveaux de stock</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button 
-            variant={view === 'list' ? 'default' : 'outline'}
-            onClick={() => setView('list')}
-            className="px-4 py-2"
-          >
-            Liste
-          </Button>
-          <Button 
-            variant={view === 'stats' ? 'default' : 'outline'}
-            onClick={() => setView('stats')}
-            className="px-4 py-2"
-          >
-            <BarChart2 className="mr-2 h-4 w-4" />
-            Statistiques
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={handleExportData}
-            className="px-4 py-2"
-          >
-            <FileDown className="mr-2 h-4 w-4" />
-            Exporter
-          </Button>
-          <div className="relative">
-            <Button 
-              variant="outline"
-              onClick={handleImportClick}
-              className="px-4 py-2"
-            >
-              <FileUp className="mr-2 h-4 w-4" />
-              Importer
-            </Button>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
-              accept=".csv"
-              className="hidden" 
-            />
-          </div>
-          <Button 
             onClick={() => setShowAddForm(true)}
-            className="ml-2"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Ajouter un article
+            Ajouter un stock
           </Button>
         </div>
       </header>
@@ -885,20 +762,6 @@ const Inventory: React.FC<InventoryProps> = ({ dateRange, searchTerm: externalSe
           </div>
         ) : (
           <div>
-            <div className="mb-6">
-              <InventoryFilters 
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                categoryFilter={categoryFilter}
-                setCategoryFilter={setCategoryFilter}
-                categories={categories}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder as (order: 'asc' | 'desc') => void}
-              />
-            </div>
-            
             <EditableTable
               data={tableData}
               columns={inventoryColumns}
@@ -979,90 +842,4 @@ const Inventory: React.FC<InventoryProps> = ({ dateRange, searchTerm: externalSe
                     <Input
                       id="minQuantity"
                       type="number"
-                      value={newItem.minQuantity}
-                      onChange={(e) => setNewItem({ ...newItem, minQuantity: Number(e.target.value) })}
-                      className="mt-1"
-                      min={0}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="price">Prix unitaire (€)</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      value={newItem.price}
-                      onChange={(e) => setNewItem({ ...newItem, price: Number(e.target.value) })}
-                      className="mt-1"
-                      min={0}
-                      step="0.01"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="location">Emplacement</Label>
-                    <Input
-                      id="location"
-                      value={newItem.location}
-                      onChange={(e) => setNewItem({ ...newItem, location: e.target.value })}
-                      className="mt-1"
-                      placeholder="Ex: Hangar principal"
-                    />
-                  </div>
-                  <div className="md:col-span-2 lg:col-span-3">
-                    <Label htmlFor="notes">Notes additionnelles</Label>
-                    <Textarea
-                      id="notes"
-                      value={newItem.notes || ''}
-                      onChange={(e) => setNewItem({ ...newItem, notes: e.target.value })}
-                      className="mt-1"
-                      placeholder="Informations complémentaires sur l'article..."
-                    />
-                  </div>
-                </div>
-                <div className="mt-6 flex justify-end">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowAddForm(false)} 
-                    className="mr-2"
-                  >
-                    Annuler
-                  </Button>
-                  <Button onClick={handleAddItem}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Ajouter l'article
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        )
-      ) : (
-        <InventoryStats 
-          inventoryData={inventoryData} 
-          categoryStats={categoryStats} 
-        />
-      )}
-
-      <ConfirmDialog 
-        open={deleteConfirmOpen} 
-        title="Supprimer l'article" 
-        description="Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible."
-        confirmText="Supprimer"
-        cancelText="Annuler"
-        onConfirm={handleDeleteItem}
-        onOpenChange={() => setDeleteConfirmOpen(false)}
-      />
-
-      <ConfirmDialog 
-        open={transactionDeleteConfirmOpen} 
-        title="Supprimer la transaction" 
-        description="Êtes-vous sûr de vouloir supprimer cette transaction ? Le stock sera ajusté en conséquence."
-        confirmText="Supprimer"
-        cancelText="Annuler"
-        onConfirm={handleDeleteTransaction}
-        onOpenChange={() => setTransactionDeleteConfirmOpen(false)}
-      />
-    </div>
-  );
-};
-
-export default Inventory;
+                      value

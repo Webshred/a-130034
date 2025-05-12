@@ -3,13 +3,11 @@ import React, { useState } from 'react';
 import PageLayout from '../components/layout/PageLayout';
 import { useAuthContext } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const AccountPage = () => {
   const { currentUser, updateProfilePic, logout } = useAuthContext();
-  const [username, setUsername] = useState(currentUser?.username || '');
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -82,19 +80,6 @@ const AccountPage = () => {
           </div>
           
           <div className="space-y-4 max-w-md mx-auto">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                Nom d'utilisateur
-              </label>
-              <Input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled
-                className="bg-gray-50"
-              />
-            </div>
-            
             <div className="pt-4">
               <Button onClick={handleLogout} variant="destructive" className="w-full">
                 Se déconnecter

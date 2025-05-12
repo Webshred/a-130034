@@ -5,7 +5,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import InventoryPage from "./pages/InventoryPage";
 import FinancePage from "./pages/FinancePage";
-import StatsPage from "./pages/StatsPage";
 import NotFound from "./pages/NotFound";
 import HelpPage from "./pages/HelpPage";
 import EmployeesPage from "./pages/EmployeesPage";
@@ -15,7 +14,6 @@ import SettingsPage from "./pages/SettingsPage";
 import AuthPage from "./pages/AuthPage";
 import { useEffect } from "react";
 import { CRMProvider } from "./contexts/CRMContext";
-import { StatisticsProvider } from "./contexts/StatisticsContext";
 import { AppSettingsProvider } from "./contexts/AppSettingsContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { trackPageView } from "./utils/analytics";
@@ -45,16 +43,6 @@ const routes = [
     element: (
       <ProtectedRoute>
         <FinancePage />
-      </ProtectedRoute>
-    ) 
-  },
-  { 
-    path: "/statistiques", 
-    element: (
-      <ProtectedRoute>
-        <StatisticsProvider>
-          <StatsPage />
-        </StatisticsProvider>
       </ProtectedRoute>
     ) 
   },
