@@ -60,7 +60,7 @@ export const usePreviewActions = ({
       return;
     }
     
-    const html = generatePreviewHTML(data, moduleName, title || '', columns || [], settings.locale);
+    const html = generatePreviewHTML(data, moduleName, title || '', columns, settings.locale);
     setPreviewHTML(html);
     setPreviewOpen(true);
   };
@@ -76,10 +76,12 @@ export const usePreviewActions = ({
     setIsActionInProgress(true);
     
     try {
-      // We need to pass the data as the third parameter, since exportModuleData expects customData?: any[]
-      // The options should be passed within the data items or as a separate parameter
-      await exportModuleData(moduleName, 'pdf', data);
-      
+      // Fix: Adjust the parameters to match the expected signature (moduleName, format, options)
+      await exportModuleData(moduleName, 'pdf', {
+        title: title || `Rapport - ${moduleName}`,
+        columns: columns,
+        data: data
+      });
       toast.success("PDF généré avec succès", {
         description: "Le document a été téléchargé."
       });

@@ -1,7 +1,7 @@
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import InventoryPage from "./pages/InventoryPage";
 import FinancePage from "./pages/FinancePage";
@@ -12,7 +12,6 @@ import MessagesPage from "./pages/MessagesPage";
 import AccountPage from "./pages/AccountPage";
 import SettingsPage from "./pages/SettingsPage";
 import AuthPage from "./pages/AuthPage";
-import LoginPage from "./pages/LoginPage";
 import { useEffect } from "react";
 import { CRMProvider } from "./contexts/CRMContext";
 import { AppSettingsProvider } from "./contexts/AppSettingsContext";
@@ -95,14 +94,6 @@ const routes = [
       </AuthRoute>
     ) 
   },
-  { 
-    path: "/login", 
-    element: (
-      <AuthRoute>
-        <LoginPage />
-      </AuthRoute>
-    ) 
-  },
   { path: "*", element: <NotFound /> }
 ];
 
@@ -144,10 +135,6 @@ const App = () => {
               <TooltipProvider>
                 <RouterChangeHandler />
                 <Routes>
-                  {/* Redirect root to login page */}
-                  <Route path="/" element={<Navigate to="/login" replace />} />
-                  
-                  {/* Add all routes from configuration */}
                   {routes.map((route) => (
                     <Route 
                       key={route.path} 
