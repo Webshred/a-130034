@@ -54,6 +54,23 @@ const FinancePage = () => {
   const [showAddExpenseForm, setShowAddExpenseForm] = useState(false);
   const [reportGenerating, setReportGenerating] = useState(false);
 
+  // Add the missing handleGenerateReport function
+  const handleGenerateReport = () => {
+    setReportGenerating(true);
+    toast.info("Génération du rapport", {
+      description: "Veuillez patienter pendant la génération du rapport..."
+    });
+    
+    // Simulate report generation
+    setTimeout(() => {
+      setReportGenerating(false);
+      toast.success("Rapport généré", {
+        description: `Le rapport pour la période ${timeFrame} a été généré avec succès.`
+      });
+    }, 2000);
+  };
+
+  
   const handleAddIncome = () => {
     setShowAddIncomeForm(true);
     
@@ -554,11 +571,11 @@ const FinancePage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start" onClick={() => handleGenerateReport}>
+                <Button variant="outline" className="w-full justify-start" onClick={() => handleGenerateReport()}>
                   <BarChart className="h-4 w-4 mr-2" />
                   Rapport de rentabilité
                 </Button>
-                <Button variant="outline" className="w-full justify-start" onClick={handleGenerateReport}>
+                <Button variant="outline" className="w-full justify-start" onClick={() => handleGenerateReport()}>
                   <CreditCard className="h-4 w-4 mr-2" />
                   Analyse des dépenses
                 </Button>

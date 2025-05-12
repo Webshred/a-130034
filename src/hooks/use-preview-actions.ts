@@ -60,7 +60,7 @@ export const usePreviewActions = ({
       return;
     }
     
-    // Pass columns as part of the options object
+    // Fix: Pass the columns properly and use correct parameter order
     const html = generatePreviewHTML(data, moduleName, title || '', settings.locale);
     setPreviewHTML(html);
     setPreviewOpen(true);
@@ -77,10 +77,11 @@ export const usePreviewActions = ({
     setIsActionInProgress(true);
     
     try {
+      // Fix: Pass the data and options correctly
       await exportModuleData(moduleName, 'pdf', {
         title: title || `Rapport - ${moduleName}`,
         columns: columns,
-        data: data
+        data
       });
       toast.success("PDF généré avec succès", {
         description: "Le document a été téléchargé."
