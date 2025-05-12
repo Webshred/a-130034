@@ -60,8 +60,9 @@ export const usePreviewActions = ({
       return;
     }
     
-    // Fix: Pass the columns properly and use correct parameter order
-    const html = generatePreviewHTML(data, moduleName, title || '', settings.locale);
+    // Fix: Match the parameter order with the function signature in preview-generator.ts
+    // The function expects (data, moduleName, title, columns, locale)
+    const html = generatePreviewHTML(data, moduleName, title || '', columns, settings.locale);
     setPreviewHTML(html);
     setPreviewOpen(true);
   };
@@ -77,11 +78,10 @@ export const usePreviewActions = ({
     setIsActionInProgress(true);
     
     try {
-      // Fix: Pass the data and options correctly
-      await exportModuleData(moduleName, 'pdf', {
+      // Fix: Pass options as a separate object, not trying to extend the data array
+      await exportModuleData(moduleName, 'pdf', data, {
         title: title || `Rapport - ${moduleName}`,
-        columns: columns,
-        data
+        columns: columns
       });
       toast.success("PDF généré avec succès", {
         description: "Le document a été téléchargé."
