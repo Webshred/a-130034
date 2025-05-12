@@ -76,10 +76,10 @@ export const usePreviewActions = ({
     setIsActionInProgress(true);
     
     try {
-      // Pass the options correctly as an object
+      // Fix: Pass options correctly as a separate third parameter
       await exportModuleData(moduleName, 'pdf', {
         title: title || `Rapport - ${moduleName}`,
-        columns: columns,
+        columns: columns, 
         data: data
       });
       toast.success("PDF généré avec succès", {
