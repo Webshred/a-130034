@@ -1,13 +1,13 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
-import useCRMContext from '../hooks/use-crm-context';
+import React, { createContext, useContext, ReactNode, useState } from 'react';
 
 // Création du contexte avec les types appropriés
-interface CRMContextType {
+export interface CRMContextType {
   lastSync: Date;
   isRefreshing: boolean;
   companyName: string;
   activeModules: string[];
+  updateInventory: (itemName: string, quantityChange: number) => Promise<void>;
   syncDataAcrossCRM: () => void;
   updateModuleData: (moduleName: string, data: any) => void;
   getModuleData: (moduleName: string) => any;
@@ -23,9 +23,55 @@ interface CRMProviderProps {
   children: ReactNode;
 }
 
+// Implementation du context
+const useCRMImplementation = (): CRMContextType => {
+  const [lastSync] = useState<Date>(new Date());
+  const [isRefreshing] = useState<boolean>(false);
+  const [companyName] = useState<string>("RWS Pharmacie");
+  const [activeModules] = useState<string[]>(["inventory", "billing", "patients"]);
+
+  // La fonction pour mettre à jour l'inventaire
+  const updateInventory = async (itemName: string, quantityChange: number): Promise<void> => {
+    console.log(`Updating inventory: ${itemName}, change: ${quantityChange}`);
+    // Ici, nous simulons la mise à jour de l'inventaire
+    // Dans une application réelle, cette fonction appellerait une API
+    return Promise.resolve();
+  };
+  
+  return {
+    lastSync,
+    isRefreshing,
+    companyName,
+    activeModules,
+    updateInventory,
+    syncDataAcrossCRM: () => {
+      console.log("Syncing data across CRM...");
+    },
+    updateModuleData: (moduleName: string, data: any) => {
+      console.log(`Updating module data: ${moduleName}`);
+    },
+    getModuleData: (moduleName: string) => {
+      console.log(`Getting module data: ${moduleName}`);
+      return null;
+    },
+    exportModuleData: async (moduleName: string, format: 'csv' | 'excel' | 'pdf', customData?: any[]) => {
+      console.log(`Exporting module data: ${moduleName} in ${format} format`);
+      return Promise.resolve(true);
+    },
+    importModuleData: async (moduleName: string, file: File) => {
+      console.log(`Importing module data: ${moduleName}`);
+      return Promise.resolve(true);
+    },
+    printModuleData: async (moduleName: string, options?: any) => {
+      console.log(`Printing module data: ${moduleName}`);
+      return Promise.resolve(true);
+    }
+  };
+};
+
 // Provider qui va envelopper notre application
 export const CRMProvider: React.FC<CRMProviderProps> = ({ children }) => {
-  const crmContext = useCRMContext();
+  const crmContext = useCRMImplementation();
   
   return (
     <CRMContext.Provider value={crmContext}>

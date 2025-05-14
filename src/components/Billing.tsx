@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ interface BillItem {
 }
 
 const Billing = () => {
+  // Use the CRM context with the updateInventory function
   const { updateInventory } = useCRM();
   const [patientName, setPatientName] = useState('');
   const [billerName, setBillerName] = useState('');
