@@ -1,15 +1,16 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuth, { User } from '../hooks/useAuth';
+import useAuth, { User, UserAdditionalInfo } from '../hooks/useAuth';
 
 interface AuthContextType {
   currentUser: User | null;
   isLoading: boolean;
   login: (username: string, password: string) => boolean;
-  signup: (username: string, password: string) => boolean;
+  signup: (username: string, password: string, additionalInfo?: UserAdditionalInfo) => boolean;
   logout: () => void;
   updateProfilePic: (imageUrl: string) => void;
+  updateUserInfo: (info: Partial<UserAdditionalInfo>) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);

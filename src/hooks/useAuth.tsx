@@ -1,11 +1,31 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+export interface UserAdditionalInfo {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  country?: string;
+  cityState?: string;
+  taxId?: string;
+}
 
 export interface User {
   id: string;
   username: string;
   password: string;
   profilePic?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  country?: string;
+  cityState?: string;
+  taxId?: string;
 }
 
 export const useAuth = () => {
@@ -51,7 +71,7 @@ export const useAuth = () => {
     }
   };
 
-  const signup = (username: string, password: string): boolean => {
+  const signup = (username: string, password: string, additionalInfo?: UserAdditionalInfo): boolean => {
     try {
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       
@@ -59,11 +79,12 @@ export const useAuth = () => {
         return false;
       }
 
-      const newUser = {
+      const newUser: User = {
         id: Date.now().toString(),
         username,
         password,
         profilePic: '',
+        ...additionalInfo
       };
 
       users.push(newUser);
@@ -106,8 +127,43 @@ export const useAuth = () => {
       }
     }
   };
+  
+  const updateUserInfo = (info: Partial<UserAdditionalInfo>) => {
+    if (currentUser) {
+      try {
+        const updatedUser = { ...currentUser, ...info };
+        
+        // Update in state
+        setCurrentUser(updatedUser);
+        
+        // Update in localStorage for currentUser
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        
+        // Update in the users array in localStorage
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const updatedUsers = users.map((u: User) => 
+          u.id === currentUser.id ? updatedUser : u
+        );
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+        
+        return true;
+      } catch (error) {
+        console.error("Error updating user information:", error);
+        return false;
+      }
+    }
+    return false;
+  };
 
-  return { currentUser, isLoading, login, signup, logout, updateProfilePic };
+  return { 
+    currentUser, 
+    isLoading, 
+    login, 
+    signup, 
+    logout, 
+    updateProfilePic,
+    updateUserInfo 
+  };
 };
 
 export default useAuth;

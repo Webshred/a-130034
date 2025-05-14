@@ -5,15 +5,23 @@ import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { User, Lock, UserPlus, LogIn } from 'lucide-react';
+import { User, Lock, UserPlus, LogIn, Mail, Phone, MapPin } from 'lucide-react';
 import { useAuthContext } from '../contexts/AuthContext';
 
 const AuthPage: React.FC = () => {
   const [loginUsername, setLoginUsername] = useState<string>('');
   const [loginPassword, setLoginPassword] = useState<string>('');
+  
+  // Signup form fields
   const [signupUsername, setSignupUsername] = useState<string>('');
   const [signupPassword, setSignupPassword] = useState<string>('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
+  
   const [activeTab, setActiveTab] = useState<string>('login');
   
   const navigate = useNavigate();
@@ -40,8 +48,9 @@ const AuthPage: React.FC = () => {
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!signupUsername || !signupPassword || !signupConfirmPassword) {
-      toast.error('Veuillez remplir tous les champs');
+    if (!signupUsername || !signupPassword || !signupConfirmPassword || 
+        !firstName || !lastName || !email || !phone) {
+      toast.error('Veuillez remplir tous les champs obligatoires');
       return;
     }
 
@@ -49,8 +58,21 @@ const AuthPage: React.FC = () => {
       toast.error('Les mots de passe ne correspondent pas');
       return;
     }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Veuillez entrer une adresse email valide');
+      return;
+    }
 
-    const success = signup(signupUsername, signupPassword);
+    const success = signup(signupUsername, signupPassword, {
+      firstName,
+      lastName,
+      email,
+      phone,
+      address
+    });
     
     if (success) {
       toast.success('Compte créé avec succès');
@@ -119,13 +141,61 @@ const AuthPage: React.FC = () => {
             
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input 
+                      className="pl-10" 
+                      placeholder="Prénom"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
+                  </div>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input 
+                      className="pl-10" 
+                      placeholder="Nom"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
+                  </div>
+                </div>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input 
                     className="pl-10" 
-                    placeholder="Choisir un nom d'utilisateur"
+                    placeholder="Nom d'utilisateur"
                     value={signupUsername}
                     onChange={(e) => setSignupUsername(e.target.value)}
+                  />
+                </div>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input 
+                    className="pl-10" 
+                    type="email" 
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input 
+                    className="pl-10" 
+                    placeholder="Téléphone"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </div>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input 
+                    className="pl-10" 
+                    placeholder="Adresse (optionnelle)"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
                 <div className="relative">
@@ -133,7 +203,7 @@ const AuthPage: React.FC = () => {
                   <Input 
                     className="pl-10" 
                     type="password" 
-                    placeholder="Choisir un mot de passe"
+                    placeholder="Mot de passe"
                     value={signupPassword}
                     onChange={(e) => setSignupPassword(e.target.value)}
                   />

@@ -7,39 +7,32 @@ import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Pencil } from 'lucide-react';
 import { EditableField } from '@/components/ui/editable-field';
 
 interface UserProfile {
   firstName: string;
   lastName: string;
-  jobTitle: string;
-  location: string;
   email: string;
   phone: string;
-  bio: string;
   country: string;
   cityState: string;
-  postalCode: string;
+  address: string;
   taxId: string;
 }
 
 const AccountPage = () => {
-  const { currentUser, updateProfilePic, logout } = useAuthContext();
+  const { currentUser, updateProfilePic, logout, updateUserInfo } = useAuthContext();
   
   const [profile, setProfile] = useState<UserProfile>({
-    firstName: currentUser?.username?.split(' ')[0] || '',
-    lastName: currentUser?.username?.split(' ')[1] || '',
-    jobTitle: 'Product Designer',
-    location: 'Los Angeles, California, USA',
-    email: 'user@example.com',
-    phone: '(213) 555-1234',
-    bio: 'Product Designer',
-    country: 'United States of America',
-    cityState: 'California, USA',
-    postalCode: 'ERT 62574',
-    taxId: 'AS564178969',
+    firstName: currentUser?.firstName || '',
+    lastName: currentUser?.lastName || '',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
+    country: currentUser?.country || 'United States of America',
+    cityState: currentUser?.cityState || 'California, USA',
+    address: currentUser?.address || '',
+    taxId: currentUser?.taxId || 'AS564178969',
   });
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +72,11 @@ const AccountPage = () => {
       ...prev,
       [field]: value
     }));
-    toast.success(`${field} updated successfully`);
+    
+    if (updateUserInfo) {
+      updateUserInfo({ [field]: value });
+      toast.success(`${field} mis à jour avec succès`);
+    }
   };
 
   return (
@@ -94,7 +91,7 @@ const AccountPage = () => {
               <div className="relative">
                 <Avatar className="h-16 w-16">
                   {currentUser?.profilePic ? (
-                    <AvatarImage src={currentUser.profilePic} alt={currentUser.username} />
+                    <AvatarImage src={currentUser.profilePic} alt={currentUser?.username || ''} />
                   ) : (
                     <AvatarFallback className="text-lg">
                       {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
@@ -121,18 +118,8 @@ const AccountPage = () => {
                 <div className="flex items-start justify-between">
                   <div>
                     <h2 className="text-xl font-medium text-gray-800">{profile.firstName} {profile.lastName}</h2>
-                    <p className="text-gray-600">{profile.jobTitle}</p>
-                    <p className="text-gray-500 text-sm">{profile.location}</p>
+                    <p className="text-gray-500 text-sm">{profile.address}</p>
                   </div>
-                  <button 
-                    className="text-gray-500 hover:text-gray-700"
-                    onClick={() => {
-                      // Edit main profile info
-                    }}
-                  >
-                    <Pencil className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                  </button>
                 </div>
               </div>
             </div>
@@ -143,32 +130,40 @@ const AccountPage = () => {
         <Card className="mb-6 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-lg">Personal information</CardTitle>
-            <button className="text-gray-500 hover:text-gray-700">
-              <Pencil className="h-4 w-4" />
-              <span className="sr-only">Edit</span>
-            </button>
           </CardHeader>
           <CardContent>
             <div className="grid sm:grid-cols-2 gap-y-4 gap-x-6">
               <div>
                 <p className="text-sm font-normal text-gray-500 mb-1">First Name</p>
-                <p className="text-gray-800">{profile.firstName}</p>
+                <EditableField 
+                  value={profile.firstName}
+                  onSave={(value) => handleProfileUpdate('firstName', String(value))}
+                  showEditIcon={true}
+                />
               </div>
               <div>
                 <p className="text-sm font-normal text-gray-500 mb-1">Last Name</p>
-                <p className="text-gray-800">{profile.lastName}</p>
+                <EditableField 
+                  value={profile.lastName}
+                  onSave={(value) => handleProfileUpdate('lastName', String(value))}
+                  showEditIcon={true}
+                />
               </div>
               <div>
                 <p className="text-sm font-normal text-gray-500 mb-1">Email address</p>
-                <p className="text-gray-800">{profile.email}</p>
+                <EditableField 
+                  value={profile.email}
+                  onSave={(value) => handleProfileUpdate('email', String(value))}
+                  showEditIcon={true}
+                />
               </div>
               <div>
                 <p className="text-sm font-normal text-gray-500 mb-1">Phone</p>
-                <p className="text-gray-800">{profile.phone}</p>
-              </div>
-              <div className="sm:col-span-2">
-                <p className="text-sm font-normal text-gray-500 mb-1">Bio</p>
-                <p className="text-gray-800">{profile.bio}</p>
+                <EditableField 
+                  value={profile.phone}
+                  onSave={(value) => handleProfileUpdate('phone', String(value))}
+                  showEditIcon={true}
+                />
               </div>
             </div>
           </CardContent>
@@ -178,28 +173,40 @@ const AccountPage = () => {
         <Card className="mb-6 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-lg">Address</CardTitle>
-            <button className="text-gray-500 hover:text-gray-700">
-              <Pencil className="h-4 w-4" />
-              <span className="sr-only">Edit</span>
-            </button>
           </CardHeader>
           <CardContent>
             <div className="grid sm:grid-cols-2 gap-y-4 gap-x-6">
               <div>
                 <p className="text-sm font-normal text-gray-500 mb-1">Country</p>
-                <p className="text-gray-800">{profile.country}</p>
+                <EditableField 
+                  value={profile.country}
+                  onSave={(value) => handleProfileUpdate('country', String(value))}
+                  showEditIcon={true}
+                />
               </div>
               <div>
                 <p className="text-sm font-normal text-gray-500 mb-1">City/State</p>
-                <p className="text-gray-800">{profile.cityState}</p>
+                <EditableField 
+                  value={profile.cityState}
+                  onSave={(value) => handleProfileUpdate('cityState', String(value))}
+                  showEditIcon={true}
+                />
               </div>
               <div>
-                <p className="text-sm font-normal text-gray-500 mb-1">Postal Code</p>
-                <p className="text-gray-800">{profile.postalCode}</p>
+                <p className="text-sm font-normal text-gray-500 mb-1">Address</p>
+                <EditableField 
+                  value={profile.address}
+                  onSave={(value) => handleProfileUpdate('address', String(value))}
+                  showEditIcon={true}
+                />
               </div>
               <div>
                 <p className="text-sm font-normal text-gray-500 mb-1">TAX ID</p>
-                <p className="text-gray-800">{profile.taxId}</p>
+                <EditableField 
+                  value={profile.taxId}
+                  onSave={(value) => handleProfileUpdate('taxId', String(value))}
+                  showEditIcon={true}
+                />
               </div>
             </div>
           </CardContent>
