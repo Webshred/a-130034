@@ -10,7 +10,6 @@ import HelpPage from "./pages/HelpPage";
 import EmployeesPage from "./pages/EmployeesPage";
 import MessagesPage from "./pages/MessagesPage";
 import AccountPage from "./pages/AccountPage";
-import SettingsPage from "./pages/SettingsPage";
 import AuthPage from "./pages/AuthPage";
 import BillingPage from "./pages/BillingPage";
 import { useEffect } from "react";
@@ -68,14 +67,6 @@ const routes = [
     element: (
       <ProtectedRoute>
         <HelpPage />
-      </ProtectedRoute>
-    ) 
-  },
-  { 
-    path: "/parametres", 
-    element: (
-      <ProtectedRoute>
-        <SettingsPage />
       </ProtectedRoute>
     ) 
   },

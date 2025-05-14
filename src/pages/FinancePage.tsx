@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import PageLayout from '../components/layout/PageLayout';
 import FinancialTracking from '../components/FinancialTracking';
@@ -39,6 +40,7 @@ const FinancePage = () => {
         description={description}
         onTitleChange={handleTitleChange}
         onDescriptionChange={handleDescriptionChange}
+        showEditIcon={false}
       />
       
       <StatisticsProvider>

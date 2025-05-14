@@ -32,6 +32,7 @@ const InventoryPage = () => {
           onTitleChange={handleTitleChange}
           onDescriptionChange={handleDescriptionChange}
           icon={<Package className="h-6 w-6" />}
+          showEditIcon={false}
         />
 
         <Inventory />

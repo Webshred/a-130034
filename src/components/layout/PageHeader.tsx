@@ -16,6 +16,7 @@ interface PageHeaderProps {
   badge?: React.ReactNode;
   stats?: React.ReactNode;
   filterArea?: React.ReactNode;
+  showEditIcon?: boolean;
 }
 
 const PageHeader = ({ 
@@ -29,7 +30,8 @@ const PageHeader = ({
   variant = 'default',
   badge,
   stats,
-  filterArea
+  filterArea,
+  showEditIcon = true
 }: PageHeaderProps) => {
   // Animation variants
   const contentVariants = {
@@ -70,7 +72,7 @@ const PageHeader = ({
                     value={title}
                     onSave={onTitleChange}
                     className="inline-block"
-                    showEditIcon
+                    showEditIcon={showEditIcon}
                   />
                   {badge && <span className="ml-2">{badge}</span>}
                 </motion.h1>
@@ -81,7 +83,7 @@ const PageHeader = ({
                       value={description}
                       onSave={onDescriptionChange}
                       className="inline-block"
-                      showEditIcon
+                      showEditIcon={showEditIcon}
                     />
                   </motion.p>
                 )}
@@ -96,7 +98,7 @@ const PageHeader = ({
                     value={title}
                     onSave={onTitleChange}
                     className="inline-block"
-                    showEditIcon
+                    showEditIcon={showEditIcon}
                   />
                   {badge && <span className="ml-2">{badge}</span>}
                 </h1>
@@ -107,7 +109,7 @@ const PageHeader = ({
                   value={description}
                   onSave={onDescriptionChange}
                   className="inline-block"
-                  showEditIcon
+                  showEditIcon={showEditIcon}
                 />
               </motion.p>
             </>

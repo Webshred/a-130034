@@ -26,6 +26,7 @@ const BillingPage = () => {
           onTitleChange={handleTitleChange}
           onDescriptionChange={handleDescriptionChange}
           icon={<Receipt className="h-6 w-6" />}
+          showEditIcon={false}
         />
 
         <Billing />

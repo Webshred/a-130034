@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import PageLayout from '../components/layout/PageLayout';
 import { useAuthContext } from '../contexts/AuthContext';
@@ -6,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Pencil } from 'lucide-react';
 import { EditableField } from '@/components/ui/editable-field';
 
@@ -15,8 +13,6 @@ interface UserProfile {
   lastName: string;
   email: string;
   phone: string;
-  country: string;
-  cityState: string;
   address: string;
   taxId: string;
 }
@@ -29,8 +25,6 @@ const AccountPage = () => {
     lastName: currentUser?.lastName || '',
     email: currentUser?.email || '',
     phone: currentUser?.phone || '',
-    country: currentUser?.country || 'United States of America',
-    cityState: currentUser?.cityState || 'California, USA',
     address: currentUser?.address || '',
     taxId: currentUser?.taxId || 'AS564178969',
   });
@@ -176,22 +170,6 @@ const AccountPage = () => {
           </CardHeader>
           <CardContent>
             <div className="grid sm:grid-cols-2 gap-y-4 gap-x-6">
-              <div>
-                <p className="text-sm font-normal text-gray-500 mb-1">Country</p>
-                <EditableField 
-                  value={profile.country}
-                  onSave={(value) => handleProfileUpdate('country', String(value))}
-                  showEditIcon={true}
-                />
-              </div>
-              <div>
-                <p className="text-sm font-normal text-gray-500 mb-1">City/State</p>
-                <EditableField 
-                  value={profile.cityState}
-                  onSave={(value) => handleProfileUpdate('cityState', String(value))}
-                  showEditIcon={true}
-                />
-              </div>
               <div>
                 <p className="text-sm font-normal text-gray-500 mb-1">Address</p>
                 <EditableField 
