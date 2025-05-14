@@ -76,12 +76,8 @@ export const usePreviewActions = ({
     setIsActionInProgress(true);
     
     try {
-      // Fix: Adjust the parameters to match the expected signature (moduleName, format, options)
-      await exportModuleData(moduleName, 'pdf', {
-        title: title || `Rapport - ${moduleName}`,
-        columns: columns,
-        data: data
-      });
+      // Pass data as the third parameter rather than including it in options
+      await exportModuleData(moduleName, 'pdf', data);
       toast.success("PDF généré avec succès", {
         description: "Le document a été téléchargé."
       });

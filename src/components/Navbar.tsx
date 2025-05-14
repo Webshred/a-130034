@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -10,7 +11,8 @@ import {
   Users,
   Settings,
   HelpCircle,
-  User
+  User,
+  Receipt
 } from 'lucide-react';
 import { useAuthContext } from '../contexts/AuthContext';
 import ProfileImageUpload from './ProfileImageUpload';
@@ -31,6 +33,7 @@ const Navbar = () => {
     { title: 'Tableau de bord', path: '/', icon: Home },
     { title: 'Inventaire', path: '/inventaire', icon: Package },
     { title: 'Finances', path: '/finances', icon: Wallet },
+    { title: 'Facturation', path: '/facturation', icon: Receipt },
     { title: 'Employés', path: '/employes', icon: Users },
     { title: 'Messages', path: '/messages', icon: MessageSquare },
     { title: 'Aide', path: '/aide', icon: HelpCircle },

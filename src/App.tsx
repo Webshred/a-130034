@@ -12,6 +12,7 @@ import MessagesPage from "./pages/MessagesPage";
 import AccountPage from "./pages/AccountPage";
 import SettingsPage from "./pages/SettingsPage";
 import AuthPage from "./pages/AuthPage";
+import BillingPage from "./pages/BillingPage";
 import { useEffect } from "react";
 import { CRMProvider } from "./contexts/CRMContext";
 import { AppSettingsProvider } from "./contexts/AppSettingsContext";
@@ -83,6 +84,14 @@ const routes = [
     element: (
       <ProtectedRoute>
         <AccountPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/facturation", 
+    element: (
+      <ProtectedRoute>
+        <BillingPage />
       </ProtectedRoute>
     ) 
   },
