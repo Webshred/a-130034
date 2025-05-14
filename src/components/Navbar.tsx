@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -9,7 +8,6 @@ import {
   X,
   MessageSquare,
   Users,
-  Settings,
   HelpCircle,
   User,
   Receipt
@@ -37,7 +35,6 @@ const Navbar = () => {
     { title: 'Employés', path: '/employes', icon: Users },
     { title: 'Messages', path: '/messages', icon: MessageSquare },
     { title: 'Aide', path: '/aide', icon: HelpCircle },
-    { title: 'Paramètres', path: '/parametres', icon: Settings },
     { title: 'Mon Compte', path: '/compte', icon: User },
   ];
 
