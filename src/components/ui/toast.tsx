@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -114,13 +115,15 @@ type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>
 
-// Add toast and useToast here directly to break circular dependencies
+// Update the ToasterToast type to include the 'open' and 'onOpenChange' properties
 type ToasterToast = {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
   variant?: "default" | "destructive"
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 const TOAST_LIMIT = 5
