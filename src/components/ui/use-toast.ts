@@ -1,7 +1,6 @@
 
-// Import from shadcn ui toast component directly
-import { useToast as useShadcnToast, toast as shadcnToast } from "@/components/ui/toast";
+// Re-export toast functionality from main implementation
+import { useToast as useToastImpl, toast as toastImpl } from "@/components/ui/toast";
 
-// Re-export with custom names to avoid circular reference
-export const useToast = useShadcnToast;
-export const toast = shadcnToast;
+export const useToast = useToastImpl;
+export const toast = toastImpl;

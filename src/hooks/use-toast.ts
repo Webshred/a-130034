@@ -1,6 +1,5 @@
 
-import * as React from "react";
-import { useToast as useToastPrimitive, type ToastActionElement } from "@/components/ui/toast";
+import { toast as toastImpl, useToast as useToastImpl, type ToastActionElement } from "@/components/ui/toast";
 
 export type ToastProps = {
   title?: string;
@@ -9,9 +8,5 @@ export type ToastProps = {
   variant?: "default" | "destructive";
 };
 
-export const useToast = () => {
-  const { toast } = useToastPrimitive();
-  return { toast };
-};
-
-export { toast } from "@/components/ui/toast";
+export const useToast = useToastImpl;
+export const toast = toastImpl;
