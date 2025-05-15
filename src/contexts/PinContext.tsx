@@ -1,10 +1,9 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Shield, ShieldCheck } from 'lucide-react';
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/toast";
 
 interface PinContextType {
   verifyPin: (pageName: string) => Promise<boolean>;
@@ -191,7 +190,7 @@ export const PinContextProvider = ({ children }: PinContextProviderProps) => {
               render={({ slots }) => (
                 <InputOTPGroup>
                   {slots.map((slot, index) => (
-                    <InputOTPSlot key={index} {...slot} />
+                    <InputOTPSlot key={index} {...slot} index={index} />
                   ))}
                 </InputOTPGroup>
               )}
