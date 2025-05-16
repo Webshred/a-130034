@@ -1,4 +1,3 @@
-
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -8,10 +7,10 @@ import FinancePage from "./pages/FinancePage";
 import NotFound from "./pages/NotFound";
 import HelpPage from "./pages/HelpPage";
 import EmployeesPage from "./pages/EmployeesPage";
-import MessagesPage from "./pages/MessagesPage";
 import AccountPage from "./pages/AccountPage";
 import AuthPage from "./pages/AuthPage";
 import BillingPage from "./pages/BillingPage";
+import AttendancePage from "./pages/AttendancePage";
 import { useEffect } from "react";
 import { CRMProvider } from "./contexts/CRMContext";
 import { AppSettingsProvider } from "./contexts/AppSettingsContext";
@@ -19,6 +18,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { trackPageView } from "./utils/analytics";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import AuthRoute from "./components/layout/AuthRoute";
+import { Toaster } from "./components/ui/toaster";
 
 // Define routes configuration with redirects and authentication
 const routes = [
@@ -55,10 +55,10 @@ const routes = [
     ) 
   },
   { 
-    path: "/messages", 
+    path: "/presences", 
     element: (
       <ProtectedRoute>
-        <MessagesPage />
+        <AttendancePage />
       </ProtectedRoute>
     ) 
   },
@@ -143,6 +143,7 @@ const App = () => {
                     />
                   ))}
                 </Routes>
+                <Toaster />
               </TooltipProvider>
             </CRMProvider>
           </AuthProvider>
