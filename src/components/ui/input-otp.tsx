@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { OTPInput, OTPInputContext } from "input-otp"
 import { Dot } from "lucide-react"
@@ -33,7 +34,15 @@ const InputOTPSlot = React.forwardRef<
   React.ComponentPropsWithoutRef<"div"> & { index: number }
 >(({ index, className, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext)
-  const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index]
+  
+  // Make sure slots exist and the index is within range before accessing
+  const slot = inputOTPContext?.slots && 
+    Array.isArray(inputOTPContext.slots) && 
+    index < inputOTPContext.slots.length
+      ? inputOTPContext.slots[index]
+      : { char: '', hasFakeCaret: false, isActive: false };
+
+  const { char, hasFakeCaret, isActive } = slot;
 
   return (
     <div

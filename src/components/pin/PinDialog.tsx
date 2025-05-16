@@ -71,6 +71,35 @@ const PinDialog: React.FC<PinDialogProps> = ({
     }
   };
 
+  // Continue entry when PIN is fully entered
+  const handlePinChange = (value: string) => {
+    onPinChange(value);
+    
+    // Auto-proceed when setting PIN and initial PIN is complete
+    if (isSettingPin && !confirmationStep && value.length === 6) {
+      setConfirmationStep(true);
+    }
+  };
+
+  // Auto-verify when confirm PIN is fully entered
+  const handleConfirmPinChange = (value: string) => {
+    onConfirmPinChange(value);
+    
+    // Auto-verify when confirming PIN and it's complete
+    if (isSettingPin && confirmationStep && value.length === 6) {
+      handlePinVerification();
+    }
+  };
+
+  // Helper function to handle entering confirmation step
+  const setConfirmationStep = (value: boolean) => {
+    // Clear confirmation PIN when entering confirmation step
+    if (value) {
+      onConfirmPinChange("");
+    }
+    onPinChange(pin); // Keep the original PIN
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) {
@@ -100,11 +129,11 @@ const PinDialog: React.FC<PinDialogProps> = ({
           <InputOTP 
             maxLength={6} 
             value={confirmationStep ? confirmPin : pin} 
-            onChange={confirmationStep ? onConfirmPinChange : onPinChange}
+            onChange={confirmationStep ? handleConfirmPinChange : handlePinChange}
             render={({ slots }) => (
               <InputOTPGroup>
-                {slots.map((slot, index) => (
-                  <InputOTPSlot key={index} {...slot} index={index} />
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <InputOTPSlot key={index} {...(slots?.[index] || {})} index={index} />
                 ))}
               </InputOTPGroup>
             )}
