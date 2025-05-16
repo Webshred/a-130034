@@ -25,6 +25,8 @@ const EmployeeQRCode: React.FC<EmployeeQRCodeProps> = ({ employeeId, name }) => 
           dark: '#000000',
           light: '#ffffff',
         },
+      }).catch(error => {
+        console.error("Error generating QR code:", error);
       });
     }
   }, [employeeId]);

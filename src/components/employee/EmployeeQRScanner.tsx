@@ -4,8 +4,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { QrCode, Camera, CheckCircle } from 'lucide-react';
-import { Employee } from '@/types/employee';
+import { QrCode, Camera, CheckCircle, UserCheck } from 'lucide-react';
+import { Employee, AttendanceStatus } from '@/types/employee';
 
 interface EmployeeQRScannerProps {
   onScan: (employeeId: string) => void;
@@ -27,6 +27,21 @@ const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees
     // Reset success message after a delay
     setTimeout(() => {
       setScanSuccess(false);
+      setSelectedEmployeeId('');
+    }, 3000);
+  };
+
+  // New function for manual attendance
+  const handleManualAttendance = () => {
+    if (!selectedEmployeeId) return;
+    
+    onScan(selectedEmployeeId);
+    setScanSuccess(true);
+    
+    // Reset success message after a delay
+    setTimeout(() => {
+      setScanSuccess(false);
+      setSelectedEmployeeId('');
     }, 3000);
   };
 
@@ -36,9 +51,9 @@ const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees
         <div className="mb-4">
           <QrCode size={48} className="mx-auto text-gray-400" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">Scanner de QR Code</h3>
+        <h3 className="text-lg font-semibold mb-2">Pointage des Employés</h3>
         <p className="text-gray-500 mb-4">
-          Simulez le scan d'un QR code d'employé en sélectionnant un employé dans la liste ci-dessous.
+          Choisissez un employé dans la liste et simulez un scan ou enregistrez sa présence manuellement.
         </p>
         
         <div className="w-full max-w-md space-y-4">
@@ -61,23 +76,35 @@ const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees
             </Select>
           </div>
           
-          <Button 
-            onClick={handleSimulateQRScan} 
-            disabled={!selectedEmployeeId || scanSuccess}
-            className="w-full"
-          >
-            <Camera className="mr-2 h-4 w-4" />
-            Simuler le scan
-          </Button>
+          <div className="grid grid-cols-2 gap-4">
+            <Button 
+              onClick={handleSimulateQRScan} 
+              disabled={!selectedEmployeeId || scanSuccess}
+              className="w-full"
+            >
+              <Camera className="mr-2 h-4 w-4" />
+              Simuler le scan
+            </Button>
+            
+            <Button 
+              onClick={handleManualAttendance}
+              disabled={!selectedEmployeeId || scanSuccess}
+              variant="secondary"
+              className="w-full"
+            >
+              <UserCheck className="mr-2 h-4 w-4" />
+              Présence manuelle
+            </Button>
+          </div>
         </div>
       </div>
       
       {scanSuccess && (
         <Alert className="bg-green-50 border-green-200 text-green-800">
           <CheckCircle className="h-4 w-4" />
-          <AlertTitle>Scan réussi</AlertTitle>
+          <AlertTitle>Enregistrement réussi</AlertTitle>
           <AlertDescription>
-            L'employé a été enregistré avec succès.
+            La présence de l'employé a été enregistrée avec succès.
           </AlertDescription>
         </Alert>
       )}
