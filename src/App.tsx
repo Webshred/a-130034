@@ -1,3 +1,4 @@
+
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -10,7 +11,6 @@ import EmployeesPage from "./pages/EmployeesPage";
 import AccountPage from "./pages/AccountPage";
 import AuthPage from "./pages/AuthPage";
 import BillingPage from "./pages/BillingPage";
-import AttendancePage from "./pages/AttendancePage";
 import { useEffect } from "react";
 import { CRMProvider } from "./contexts/CRMContext";
 import { AppSettingsProvider } from "./contexts/AppSettingsContext";
@@ -51,14 +51,6 @@ const routes = [
     element: (
       <ProtectedRoute>
         <EmployeesPage />
-      </ProtectedRoute>
-    ) 
-  },
-  { 
-    path: "/presences", 
-    element: (
-      <ProtectedRoute>
-        <AttendancePage />
       </ProtectedRoute>
     ) 
   },

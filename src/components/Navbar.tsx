@@ -10,8 +10,7 @@ import {
   Users,
   HelpCircle,
   User,
-  Receipt,
-  UserRound
+  Receipt
 } from 'lucide-react';
 import { useAuthContext } from '../contexts/AuthContext';
 import ProfileImageUpload from './ProfileImageUpload';
@@ -34,7 +33,6 @@ const Navbar = () => {
     { title: 'Finances', path: '/finances', icon: Wallet },
     { title: 'Facturation', path: '/facturation', icon: Receipt },
     { title: 'Employés', path: '/employes', icon: Users },
-    { title: 'Présences', path: '/presences', icon: UserRound },
     { title: 'Aide', path: '/aide', icon: HelpCircle },
     { title: 'Mon Compte', path: '/compte', icon: User },
   ];
