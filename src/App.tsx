@@ -7,9 +7,7 @@ import InventoryPage from "./pages/InventoryPage";
 import FinancePage from "./pages/FinancePage";
 import NotFound from "./pages/NotFound";
 import HelpPage from "./pages/HelpPage";
-import EmployeesPage from "./pages/EmployeesPage";
 import AccountPage from "./pages/AccountPage";
-import AuthPage from "./pages/AuthPage";
 import BillingPage from "./pages/BillingPage";
 import { useEffect } from "react";
 import { CRMProvider } from "./contexts/CRMContext";
@@ -17,74 +15,33 @@ import { AppSettingsProvider } from "./contexts/AppSettingsContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { trackPageView } from "./utils/analytics";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
-import AuthRoute from "./components/layout/AuthRoute";
 import { Toaster } from "./components/ui/toaster";
 
 // Define routes configuration with redirects and authentication
 const routes = [
   { 
     path: "/", 
-    element: (
-      <ProtectedRoute>
-        <Index />
-      </ProtectedRoute>
-    ) 
+    element: <Index />
   },
   { 
     path: "/inventaire", 
-    element: (
-      <ProtectedRoute>
-        <InventoryPage />
-      </ProtectedRoute>
-    ) 
+    element: <InventoryPage />
   },
   { 
     path: "/finances", 
-    element: (
-      <ProtectedRoute>
-        <FinancePage />
-      </ProtectedRoute>
-    ) 
-  },
-  { 
-    path: "/employes", 
-    element: (
-      <ProtectedRoute>
-        <EmployeesPage />
-      </ProtectedRoute>
-    ) 
+    element: <FinancePage />
   },
   { 
     path: "/aide", 
-    element: (
-      <ProtectedRoute>
-        <HelpPage />
-      </ProtectedRoute>
-    ) 
+    element: <HelpPage />
   },
   { 
     path: "/compte", 
-    element: (
-      <ProtectedRoute>
-        <AccountPage />
-      </ProtectedRoute>
-    ) 
+    element: <AccountPage />
   },
   { 
     path: "/facturation", 
-    element: (
-      <ProtectedRoute>
-        <BillingPage />
-      </ProtectedRoute>
-    ) 
-  },
-  { 
-    path: "/auth", 
-    element: (
-      <AuthRoute>
-        <AuthPage />
-      </AuthRoute>
-    ) 
+    element: <BillingPage />
   },
   { path: "*", element: <NotFound /> }
 ];

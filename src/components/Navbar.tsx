@@ -7,7 +7,6 @@ import {
   Wallet, 
   Menu, 
   X,
-  Users,
   HelpCircle,
   User,
   Receipt
@@ -32,7 +31,6 @@ const Navbar = () => {
     { title: 'Inventaire', path: '/inventaire', icon: Package },
     { title: 'Finances', path: '/finances', icon: Wallet },
     { title: 'Facturation', path: '/facturation', icon: Receipt },
-    { title: 'Employés', path: '/employes', icon: Users },
     { title: 'Aide', path: '/aide', icon: HelpCircle },
     { title: 'Mon Compte', path: '/compte', icon: User },
   ];
