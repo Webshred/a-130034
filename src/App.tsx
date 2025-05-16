@@ -8,6 +8,7 @@ import FinancePage from "./pages/FinancePage";
 import NotFound from "./pages/NotFound";
 import HelpPage from "./pages/HelpPage";
 import EmployeesPage from "./pages/EmployeesPage";
+import MessagesPage from "./pages/MessagesPage";
 import AccountPage from "./pages/AccountPage";
 import AuthPage from "./pages/AuthPage";
 import BillingPage from "./pages/BillingPage";
@@ -18,7 +19,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { trackPageView } from "./utils/analytics";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import AuthRoute from "./components/layout/AuthRoute";
-import { PinContextProvider } from "./contexts/PinContext";
 
 // Define routes configuration with redirects and authentication
 const routes = [
@@ -51,6 +51,14 @@ const routes = [
     element: (
       <ProtectedRoute>
         <EmployeesPage />
+      </ProtectedRoute>
+    ) 
+  },
+  { 
+    path: "/messages", 
+    element: (
+      <ProtectedRoute>
+        <MessagesPage />
       </ProtectedRoute>
     ) 
   },
@@ -124,20 +132,18 @@ const App = () => {
         <AppSettingsProvider>
           <AuthProvider>
             <CRMProvider>
-              <PinContextProvider>
-                <TooltipProvider>
-                  <RouterChangeHandler />
-                  <Routes>
-                    {routes.map((route) => (
-                      <Route 
-                        key={route.path} 
-                        path={route.path} 
-                        element={route.element} 
-                      />
-                    ))}
-                  </Routes>
-                </TooltipProvider>
-              </PinContextProvider>
+              <TooltipProvider>
+                <RouterChangeHandler />
+                <Routes>
+                  {routes.map((route) => (
+                    <Route 
+                      key={route.path} 
+                      path={route.path} 
+                      element={route.element} 
+                    />
+                  ))}
+                </Routes>
+              </TooltipProvider>
             </CRMProvider>
           </AuthProvider>
         </AppSettingsProvider>
