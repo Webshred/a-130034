@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -11,8 +12,11 @@ import {
   Receipt,
   Users
 } from 'lucide-react';
-import { useAuthContext } from '../contexts/AuthContext';
-import ProfileImageUpload from './ProfileImageUpload';
+
+// Since we are updating this file, we need to fix these import paths
+// We'll import from the src folder using absolute paths
+import { useAuthContext } from '@/contexts/AuthContext';
+import ProfileImageUpload from '@/components/ProfileImageUpload';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
