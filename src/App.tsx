@@ -1,6 +1,7 @@
+
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import InventoryPage from "./pages/InventoryPage";
 import FinancePage from "./pages/FinancePage";
@@ -9,6 +10,8 @@ import HelpPage from "./pages/HelpPage";
 import AccountPage from "./pages/AccountPage";
 import BillingPage from "./pages/BillingPage";
 import EmployeesPage from "./pages/EmployeesPage";
+import SettingsPage from "./pages/SettingsPage";
+import AuthPage from "./pages/AuthPage";
 import { useEffect } from "react";
 import { CRMProvider } from "./contexts/CRMContext";
 import { AppSettingsProvider } from "./contexts/AppSettingsContext";
@@ -21,31 +24,39 @@ import { Toaster } from "./components/ui/toaster";
 const routes = [
   { 
     path: "/", 
-    element: <Index />
+    element: <ProtectedRoute><Index /></ProtectedRoute>
   },
   { 
     path: "/inventaire", 
-    element: <InventoryPage />
+    element: <ProtectedRoute><InventoryPage /></ProtectedRoute>
   },
   { 
     path: "/finances", 
-    element: <FinancePage />
+    element: <ProtectedRoute><FinancePage /></ProtectedRoute>
   },
   { 
     path: "/employes", 
-    element: <EmployeesPage />
+    element: <ProtectedRoute><EmployeesPage /></ProtectedRoute>
+  },
+  { 
+    path: "/parametres", 
+    element: <ProtectedRoute><SettingsPage /></ProtectedRoute>
   },
   { 
     path: "/aide", 
-    element: <HelpPage />
+    element: <ProtectedRoute><HelpPage /></ProtectedRoute>
   },
   { 
     path: "/compte", 
-    element: <AccountPage />
+    element: <ProtectedRoute><AccountPage /></ProtectedRoute>
   },
   { 
     path: "/facturation", 
-    element: <BillingPage />
+    element: <ProtectedRoute><BillingPage /></ProtectedRoute>
+  },
+  { 
+    path: "/auth", 
+    element: <AuthPage />
   },
   { path: "*", element: <NotFound /> }
 ];

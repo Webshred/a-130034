@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,9 +32,29 @@ export const useAuth = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
+  // Initialize the users array with a default user if it doesn't exist
+  const initializeUsers = () => {
+    const existingUsers = localStorage.getItem('users');
+    if (!existingUsers) {
+      const defaultUser = {
+        id: '1',
+        username: 'admin',
+        password: 'admin',
+        email: 'admin@example.com',
+        firstName: 'Admin',
+        lastName: 'User'
+      };
+      
+      localStorage.setItem('users', JSON.stringify([defaultUser]));
+    }
+  };
+
   useEffect(() => {
     // Set initial loading state
     setIsLoading(true);
+    
+    // Initialize users array with default user
+    initializeUsers();
     
     try {
       const storedUser = localStorage.getItem('currentUser');
@@ -89,8 +108,6 @@ export const useAuth = () => {
 
       users.push(newUser);
       localStorage.setItem('users', JSON.stringify(users));
-      localStorage.setItem('currentUser', JSON.stringify(newUser));
-      setCurrentUser(newUser);
       
       return true;
     } catch (error) {

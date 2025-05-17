@@ -10,11 +10,11 @@ import {
   HelpCircle,
   User,
   Receipt,
-  Users
+  Users,
+  Settings
 } from 'lucide-react';
 
-// Since we are updating this file, we need to fix these import paths
-// We'll import from the src folder using absolute paths
+// Import from the src folder using absolute paths
 import { useAuthContext } from '@/contexts/AuthContext';
 import ProfileImageUpload from '@/components/ProfileImageUpload';
 
@@ -36,6 +36,7 @@ const Navbar = () => {
     { title: 'Finances', path: '/finances', icon: Wallet },
     { title: 'Facturation', path: '/facturation', icon: Receipt },
     { title: 'Employés', path: '/employes', icon: Users },
+    { title: 'Paramètres', path: '/parametres', icon: Settings },
     { title: 'Aide', path: '/aide', icon: HelpCircle },
     { title: 'Mon Compte', path: '/compte', icon: User },
   ];
