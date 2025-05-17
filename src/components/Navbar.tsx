@@ -9,7 +9,9 @@ import {
   X,
   HelpCircle,
   User,
-  Receipt
+  Receipt,
+  Users,
+  Settings
 } from 'lucide-react';
 import { useAuthContext } from '../contexts/AuthContext';
 import ProfileImageUpload from './ProfileImageUpload';
@@ -31,6 +33,8 @@ const Navbar = () => {
     { title: 'Inventaire', path: '/inventaire', icon: Package },
     { title: 'Finances', path: '/finances', icon: Wallet },
     { title: 'Facturation', path: '/facturation', icon: Receipt },
+    { title: 'Employés', path: '/employes', icon: Users },
+    { title: 'Paramètres', path: '/parametres', icon: Settings },
     { title: 'Aide', path: '/aide', icon: HelpCircle },
     { title: 'Mon Compte', path: '/compte', icon: User },
   ];
