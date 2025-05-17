@@ -10,8 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EmployeeSummary from './EmployeeSummary';
 import EmployeeList from './EmployeeList';
 import EmployeeQRScanner from './EmployeeQRScanner';
+import EmployeeReport from './EmployeeReport';
 import { useToast } from '@/hooks/use-toast';
-import { Employee, EmployeeAttendance, AttendanceStatus } from '@/types/employee';
+import { Employee, EmployeeAttendance, AttendanceStatus, ActivityType } from '@/types/employee';
 
 // Initial demo employees
 const initialEmployees: Employee[] = [
@@ -24,6 +25,7 @@ const EmployeeManagement = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [attendances, setAttendances] = useState<EmployeeAttendance[]>([]);
   const [activeTab, setActiveTab] = useState('summary');
+  const [showReportModal, setShowReportModal] = useState(false);
   const { toast } = useToast();
 
   // Load data from localStorage on initial load
@@ -72,7 +74,7 @@ const EmployeeManagement = () => {
     });
   };
 
-  const handleScanAttendance = (employeeId: string) => {
+  const handleScanAttendance = (employeeId: string, activityType: ActivityType = 'check-in') => {
     const employee = employees.find(emp => emp.id === employeeId);
     if (!employee) {
       toast({
@@ -87,51 +89,143 @@ const EmployeeManagement = () => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
     
-    // Check if employee already checked in today (within the past 8 hours)
-    const recentAttendance = attendances.find(
-      att => att.employeeId === employeeId && 
-      new Date(att.timestamp).getTime() > (now.getTime() - 8 * 60 * 60 * 1000)
-    );
+    // Special handling for activity types
+    if (activityType === 'check-in') {
+      // For check-in, find if employee already checked in within the past hour
+      const recentCheckIn = attendances.find(
+        att => att.employeeId === employeeId && 
+        att.activityType === 'check-in' &&
+        new Date(att.timestamp).getTime() > (now.getTime() - 1 * 60 * 60 * 1000)
+      );
 
-    if (recentAttendance) {
+      if (recentCheckIn) {
+        // If checked in recently, inform the user
+        toast({
+          title: "Entrée refusée",
+          description: "Vous avez déjà pointé dans la dernière heure",
+          variant: "warning",
+        });
+        return;
+      }
+
+      // Determine status (present/late) for check-in
+      const [workHourStart] = employee.workHours.start.split(':').map(Number);
+      const currentHour = now.getHours();
+      
+      let status: AttendanceStatus = 'present';
+      if (currentHour > workHourStart) {
+        status = 'late';
+      }
+
+      // Create check-in attendance record
+      const newAttendance: EmployeeAttendance = {
+        employeeId,
+        name: employee.name,
+        timestamp: now.toISOString(),
+        date: today,
+        status,
+        activityType: 'check-in'
+      };
+
+      setAttendances(prev => [...prev, newAttendance]);
+      
       toast({
-        title: "Entrée refusée",
-        description: "Vous avez déjà pointé dans les dernières 8 heures",
-        variant: "warning",
+        title: "Pointage enregistré",
+        description: `${employee.name} - ${status === 'late' ? 'En retard' : 'À l\'heure'}`,
+        variant: "success",
       });
-      return;
+
+    } else if (activityType === 'check-out') {
+      // For check-out, find the most recent check-in to pair with
+      const latestCheckIn = [...attendances]
+        .filter(att => att.employeeId === employeeId && att.activityType === 'check-in')
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
+
+      if (!latestCheckIn) {
+        toast({
+          title: "Erreur",
+          description: "Aucun pointage d'entrée trouvé pour créer une sortie",
+          variant: "warning",
+        });
+        return;
+      }
+
+      // Create check-out record
+      const newAttendance: EmployeeAttendance = {
+        employeeId,
+        name: employee.name,
+        timestamp: now.toISOString(),
+        date: today,
+        status: 'present', // Status is maintained from check-in
+        activityType: 'check-out'
+      };
+
+      setAttendances(prev => [...prev, newAttendance]);
+      
+      toast({
+        title: "Sortie enregistrée",
+        description: `${employee.name} - Sortie à ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`,
+        variant: "success",
+      });
+
+    } else if (activityType === 'leave') {
+      // Create leave record
+      const newAttendance: EmployeeAttendance = {
+        employeeId,
+        name: employee.name,
+        timestamp: now.toISOString(),
+        date: today,
+        status: 'leave',
+        activityType: 'leave'
+      };
+
+      setAttendances(prev => [...prev, newAttendance]);
+      
+      toast({
+        title: "Congé enregistré",
+        description: `${employee.name} est en congé aujourd'hui`,
+        variant: "success",
+      });
     }
-
-    // Determine status (present/late)
-    const [workHourStart] = employee.workHours.start.split(':').map(Number);
-    const currentHour = now.getHours();
-    
-    let status: AttendanceStatus = 'present';
-    if (currentHour > workHourStart) {
-      status = 'late';
-    }
-
-    const newAttendance: EmployeeAttendance = {
-      employeeId,
-      name: employee.name,
-      timestamp: now.toISOString(),
-      date: today,
-      status
-    };
-
-    setAttendances(prev => [...prev, newAttendance]);
-    
-    toast({
-      title: "Présence enregistrée",
-      description: `${employee.name} - ${status === 'late' ? 'En retard' : 'À l\'heure'}`,
-      variant: "success",
-    });
   };
+
+  // Auto-checkout function: Check if employees have been checked in for more than 8 hours
+  const checkAutoCheckout = () => {
+    const now = new Date();
+    
+    // Get all check-ins without corresponding check-outs
+    const checkIns = attendances.filter(att => att.activityType === 'check-in');
+    
+    for (const checkIn of checkIns) {
+      // Find if there's a checkout for this check-in
+      const hasCheckout = attendances.some(att => 
+        att.employeeId === checkIn.employeeId && 
+        att.activityType === 'check-out' && 
+        new Date(att.timestamp).getTime() > new Date(checkIn.timestamp).getTime() &&
+        new Date(att.timestamp).getTime() < new Date(checkIn.timestamp).getTime() + 24 * 60 * 60 * 1000 // within 24 hours
+      );
+      
+      if (!hasCheckout) {
+        // Check if the check-in is more than 1 hour ago (using 1 hour for testing, real implementation would use 8 hours)
+        const checkInTime = new Date(checkIn.timestamp);
+        if (now.getTime() - checkInTime.getTime() > 1 * 60 * 60 * 1000) {
+          // Auto-checkout this employee
+          handleScanAttendance(checkIn.employeeId, 'check-out');
+        }
+      }
+    }
+  };
+  
+  // Run auto-checkout check periodically
+  useEffect(() => {
+    const interval = setInterval(checkAutoCheckout, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, [attendances]);
 
   // Calculate summary data for today
   const todayDate = new Date().toISOString().split('T')[0];
   const todayAttendances = attendances.filter(att => 
-    att.date.split('T')[0] === todayDate
+    att.date.split('T')[0] === todayDate && att.activityType === 'check-in'
   );
   
   const presentToday = todayAttendances.length;
@@ -157,6 +251,7 @@ const EmployeeManagement = () => {
             presentToday={presentToday}
             absentToday={absentToday}
             recentAttendances={todayAttendances}
+            onShowReport={() => setShowReportModal(true)}
           />
         </TabsContent>
         
@@ -182,6 +277,15 @@ const EmployeeManagement = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {showReportModal && (
+        <EmployeeReport 
+          employees={employees} 
+          attendances={attendances}
+          open={showReportModal}
+          onClose={() => setShowReportModal(false)}
+        />
+      )}
     </div>
   );
 };

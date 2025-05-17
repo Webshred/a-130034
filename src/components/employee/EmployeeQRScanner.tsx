@@ -4,16 +4,17 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { QrCode, Camera, CheckCircle, UserCheck } from 'lucide-react';
-import { Employee, AttendanceStatus } from '@/types/employee';
+import { QrCode, Camera, CheckCircle, UserCheck, LogOut, Calendar } from 'lucide-react';
+import { Employee, ActivityType } from '@/types/employee';
 
 interface EmployeeQRScannerProps {
-  onScan: (employeeId: string) => void;
+  onScan: (employeeId: string, activityType: ActivityType) => void;
   employees: Employee[];
 }
 
 const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees }) => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
+  const [activityType, setActivityType] = useState<ActivityType>('check-in');
   const [scanSuccess, setScanSuccess] = useState(false);
   
   // In a real application, this would be connected to a camera feed
@@ -21,7 +22,7 @@ const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees
   const handleSimulateQRScan = () => {
     if (!selectedEmployeeId) return;
     
-    onScan(selectedEmployeeId);
+    onScan(selectedEmployeeId, activityType);
     setScanSuccess(true);
     
     // Reset success message after a delay
@@ -35,7 +36,7 @@ const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees
   const handleManualAttendance = () => {
     if (!selectedEmployeeId) return;
     
-    onScan(selectedEmployeeId);
+    onScan(selectedEmployeeId, activityType);
     setScanSuccess(true);
     
     // Reset success message after a delay
@@ -53,7 +54,7 @@ const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees
         </div>
         <h3 className="text-lg font-semibold mb-2">Pointage des Employés</h3>
         <p className="text-gray-500 mb-4">
-          Choisissez un employé dans la liste et simulez un scan ou enregistrez sa présence manuellement.
+          Choisissez un employé et le type d'activité pour simuler un scan ou enregistrer sa présence manuellement.
         </p>
         
         <div className="w-full max-w-md space-y-4">
@@ -72,6 +73,23 @@ const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees
                     {employee.name}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="activityType">Type d'activité</Label>
+            <Select 
+              value={activityType} 
+              onValueChange={(value: ActivityType) => setActivityType(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez un type d'activité" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="check-in">Arrivée</SelectItem>
+                <SelectItem value="check-out">Départ</SelectItem>
+                <SelectItem value="leave">Congé</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -104,7 +122,9 @@ const EmployeeQRScanner: React.FC<EmployeeQRScannerProps> = ({ onScan, employees
           <CheckCircle className="h-4 w-4" />
           <AlertTitle>Enregistrement réussi</AlertTitle>
           <AlertDescription>
-            La présence de l'employé a été enregistrée avec succès.
+            {activityType === 'check-in' && "L'arrivée de l'employé a été enregistrée avec succès."}
+            {activityType === 'check-out' && "Le départ de l'employé a été enregistré avec succès."}
+            {activityType === 'leave' && "Le congé de l'employé a été enregistré avec succès."}
           </AlertDescription>
         </Alert>
       )}
