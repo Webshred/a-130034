@@ -60,6 +60,16 @@ export const AppSettingsProvider: React.FC<AppSettingsProviderProps> = ({ childr
     }
   }, [settings.darkMode]);
 
+  // Apply dark mode on initial load
+  useEffect(() => {
+    const isDarkMode = settings.darkMode;
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   const updateSetting = (key: keyof AppSettings, value: any) => {
     setSettings(prevSettings => {
       const updatedSettings = {

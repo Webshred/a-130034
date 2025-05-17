@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,16 @@ interface BillItem {
   unitPrice: number;
 }
 
+// Type for inventory items
+interface InventoryItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  unit: string;
+  category?: string;
+}
+
 const Billing = () => {
   // Use the CRM context with the updateInventory function
   const { updateInventory } = useCRM();
@@ -23,7 +34,92 @@ const Billing = () => {
   const [billerName, setBillerName] = useState('');
   const [billItems, setBillItems] = useState<BillItem[]>([]);
   const [newItem, setNewItem] = useState({ name: '', quantity: 1, unitPrice: 0 });
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<InventoryItem[]>([]);
   const formRef = useRef<HTMLDivElement>(null);
+  const suggestionRef = useRef<HTMLDivElement>(null);
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    try {
+      // Load inventory items from localStorage
+      const storedInventory = localStorage.getItem('inventoryData');
+      if (storedInventory) {
+        setInventoryItems(JSON.parse(storedInventory));
+      }
+
+      // Load any saved bill draft
+      const storedBillItems = localStorage.getItem('billItems');
+      if (storedBillItems) {
+        setBillItems(JSON.parse(storedBillItems));
+      }
+      
+      const storedPatientName = localStorage.getItem('billPatientName');
+      if (storedPatientName) {
+        setPatientName(storedPatientName);
+      }
+      
+      const storedBillerName = localStorage.getItem('billBillerName');
+      if (storedBillerName) {
+        setBillerName(storedBillerName);
+      }
+    } catch (error) {
+      console.error("Error loading data from localStorage", error);
+    }
+  }, []);
+
+  // Save bill data to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('billItems', JSON.stringify(billItems));
+      localStorage.setItem('billPatientName', patientName);
+      localStorage.setItem('billBillerName', billerName);
+    } catch (error) {
+      console.error("Error saving bill data to localStorage", error);
+    }
+  }, [billItems, patientName, billerName]);
+
+  // Handle clicks outside the suggestions dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionRef.current && !suggestionRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Filter suggestions based on input
+  const handleItemNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    setNewItem({ ...newItem, name: input });
+    
+    // Filter inventory items that match the input
+    if (input.length > 0) {
+      const filtered = inventoryItems.filter(item => 
+        item.name.toLowerCase().includes(input.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  // Select a suggestion
+  const selectSuggestion = (item: InventoryItem) => {
+    setNewItem({
+      name: item.name,
+      quantity: 1,
+      unitPrice: item.price
+    });
+    setShowSuggestions(false);
+  };
 
   // Add new item to bill
   const addItem = () => {
@@ -69,20 +165,41 @@ const Billing = () => {
     try {
       // Update inventory quantities for each item
       for (const item of billItems) {
-        // This would connect to your inventory system to reduce stock
-        await updateInventory(item.name, -item.quantity);
+        // Update the inventory in localStorage
+        const updatedInventory = inventoryItems.map(invItem => {
+          if (invItem.name === item.name) {
+            const newQuantity = invItem.quantity - item.quantity;
+            // Also update the CRM system
+            updateInventory(item.name, -item.quantity).catch(err => 
+              console.error(`Error updating inventory in CRM: ${err}`)
+            );
+            return {
+              ...invItem,
+              quantity: newQuantity >= 0 ? newQuantity : 0
+            };
+          }
+          return invItem;
+        });
+        
+        setInventoryItems(updatedInventory);
+        localStorage.setItem('inventoryData', JSON.stringify(updatedInventory));
       }
 
       // Generate receipt content and print
       const receiptContent = generateReceiptHTML();
       printReceipt(receiptContent);
       
-      toast.success("Facture imprimée avec succès");
+      toast.success("Facture imprimée avec succès et inventaire mis à jour");
       
       // Reset the form after successful printing
       setPatientName('');
       setBillerName('');
       setBillItems([]);
+      
+      // Clear localStorage for the bill draft
+      localStorage.removeItem('billItems');
+      localStorage.removeItem('billPatientName');
+      localStorage.removeItem('billBillerName');
     } catch (error) {
       console.error("Erreur lors de l'impression ou la mise à jour de l'inventaire:", error);
       toast.error("Une erreur est survenue lors de l'impression");
@@ -245,12 +362,39 @@ const Billing = () => {
                   )}
                   {/* New item row */}
                   <TableRow className="bg-muted/30">
-                    <TableCell>
+                    <TableCell className="relative">
                       <Input
                         placeholder="Nom de l'article"
                         value={newItem.name}
-                        onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                        onChange={handleItemNameChange}
+                        onFocus={() => {
+                          if (newItem.name && filteredSuggestions.length > 0) {
+                            setShowSuggestions(true);
+                          }
+                        }}
                       />
+                      
+                      {/* Suggestions dropdown */}
+                      {showSuggestions && (
+                        <div 
+                          ref={suggestionRef}
+                          className="absolute z-10 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-auto mt-1"
+                        >
+                          {filteredSuggestions.map(suggestion => (
+                            <div
+                              key={suggestion.id}
+                              className="px-4 py-2 hover:bg-muted cursor-pointer"
+                              onClick={() => selectSuggestion(suggestion)}
+                            >
+                              <div className="font-medium">{suggestion.name}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {suggestion.price.toFixed(2)} € - 
+                                Disponible: {suggestion.quantity} {suggestion.unit}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Input
