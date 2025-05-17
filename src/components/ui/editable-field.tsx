@@ -149,9 +149,6 @@ export const EditableField = ({
           )}
         </span>
       </div>
-      {showEditIcon && (
-        <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-      )}
     </div>
   );
 };

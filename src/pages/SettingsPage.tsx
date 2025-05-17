@@ -5,8 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useAppSettings } from '@/contexts/AppSettingsContext';
 
 const SettingsPage = () => {
+  const { settings, updateSetting } = useAppSettings();
+
   return (
     <PageLayout>
       <div className="p-6 animate-enter">
@@ -52,7 +55,11 @@ const SettingsPage = () => {
                       Collecte de données pour améliorer l'application
                     </p>
                   </div>
-                  <Switch id="analytics" />
+                  <Switch 
+                    id="analytics" 
+                    checked={settings.analytics} 
+                    onCheckedChange={(checked) => updateSetting('analytics', checked)}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -84,7 +91,11 @@ const SettingsPage = () => {
                       Recevoir des notifications push
                     </p>
                   </div>
-                  <Switch id="push-notifs" defaultChecked />
+                  <Switch 
+                    id="push-notifs" 
+                    checked={settings.notifications} 
+                    onCheckedChange={(checked) => updateSetting('notifications', checked)}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -106,7 +117,25 @@ const SettingsPage = () => {
                       Activer le mode sombre
                     </p>
                   </div>
-                  <Switch id="dark-mode" />
+                  <Switch 
+                    id="dark-mode" 
+                    checked={settings.darkMode}
+                    onCheckedChange={(checked) => updateSetting('darkMode', checked)}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="compact-view">Vue compacte</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Réduire l'espacement pour afficher plus de contenu
+                    </p>
+                  </div>
+                  <Switch 
+                    id="compact-view" 
+                    checked={settings.compactView}
+                    onCheckedChange={(checked) => updateSetting('compactView', checked)}
+                  />
                 </div>
               </CardContent>
             </Card>

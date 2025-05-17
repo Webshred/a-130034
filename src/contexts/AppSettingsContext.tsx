@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface AppSettings {
   darkMode: boolean;
@@ -11,7 +11,7 @@ interface AppSettings {
 
 interface AppSettingsContextType {
   settings: AppSettings;
-  updateSetting: (key: string, value: any) => void;
+  updateSetting: (key: keyof AppSettings, value: any) => void;
   updateNestedSetting: (section: string, key: string, value: any) => void;
 }
 
@@ -51,7 +51,16 @@ export const AppSettingsProvider: React.FC<AppSettingsProviderProps> = ({ childr
 
   const [settings, setSettings] = useState<AppSettings>(loadSettings());
 
-  const updateSetting = (key: string, value: any) => {
+  // Apply dark mode when settings change
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [settings.darkMode]);
+
+  const updateSetting = (key: keyof AppSettings, value: any) => {
     setSettings(prevSettings => {
       const updatedSettings = {
         ...prevSettings,

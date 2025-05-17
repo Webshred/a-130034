@@ -28,6 +28,9 @@ const AuthPage = () => {
   const [signupPassword, setSignupPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [signupError, setSignupError] = useState('');
   
   // If user is already logged in, redirect to dashboard
@@ -62,7 +65,7 @@ const AuthPage = () => {
     setSignupError('');
     
     if (!signupUsername || !signupPassword || !confirmPassword || !email) {
-      setSignupError('Veuillez remplir tous les champs');
+      setSignupError('Veuillez remplir tous les champs obligatoires');
       return;
     }
     
@@ -73,6 +76,10 @@ const AuthPage = () => {
     
     const success = signup(signupUsername, signupPassword, {
       email: email,
+      firstName: fullName.split(' ')[0] || '',
+      lastName: fullName.split(' ').slice(1).join(' ') || '',
+      phone: phone,
+      address: address,
     });
     
     if (success) {
@@ -194,6 +201,39 @@ const AuthPage = () => {
                       placeholder="Choisissez un nom d'utilisateur"
                       value={signupUsername}
                       onChange={(e) => setSignupUsername(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-fullname">Nom complet</Label>
+                    <Input
+                      id="signup-fullname"
+                      type="text"
+                      placeholder="Entrez votre nom complet"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-phone">Numéro de téléphone</Label>
+                    <Input
+                      id="signup-phone"
+                      type="tel"
+                      placeholder="Entrez votre numéro de téléphone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-address">Adresse</Label>
+                    <Input
+                      id="signup-address"
+                      type="text"
+                      placeholder="Entrez votre adresse"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
                   
