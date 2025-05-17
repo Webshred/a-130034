@@ -1,7 +1,7 @@
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import InventoryPage from "./pages/InventoryPage";
 import FinancePage from "./pages/FinancePage";
@@ -74,7 +74,7 @@ const queryClient = new QueryClient({
 });
 
 // Router change handler component
-const RouterChangeHandler = () => {
+const RouterChangeHandler = ({ children }) => {
   useEffect(() => {
     // Scroll to top on route change
     window.scrollTo(0, 0);
@@ -83,9 +83,9 @@ const RouterChangeHandler = () => {
     const currentPath = window.location.pathname;
     const pageName = currentPath === '/' ? 'dashboard' : currentPath.replace(/^\//, '');
     trackPageView(pageName);
-  }, [location.pathname]);
+  }, [window.location.pathname]);
   
-  return null;
+  return children;
 };
 
 // Application main component with properly nested providers
@@ -93,25 +93,26 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppSettingsProvider>
-          <AuthProvider>
-            <CRMProvider>
-              <TooltipProvider>
-                <RouterChangeHandler />
-                <Routes>
-                  {routes.map((route) => (
-                    <Route 
-                      key={route.path} 
-                      path={route.path} 
-                      element={route.element} 
-                    />
-                  ))}
-                </Routes>
-                <Toaster />
-              </TooltipProvider>
-            </CRMProvider>
-          </AuthProvider>
-        </AppSettingsProvider>
+        <RouterChangeHandler>
+          <AppSettingsProvider>
+            <AuthProvider>
+              <CRMProvider>
+                <TooltipProvider>
+                  <Routes>
+                    {routes.map((route) => (
+                      <Route 
+                        key={route.path} 
+                        path={route.path} 
+                        element={route.element} 
+                      />
+                    ))}
+                  </Routes>
+                  <Toaster />
+                </TooltipProvider>
+              </CRMProvider>
+            </AuthProvider>
+          </AppSettingsProvider>
+        </RouterChangeHandler>
       </BrowserRouter>
     </QueryClientProvider>
   );
